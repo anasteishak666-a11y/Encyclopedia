@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Стандарты работы с контентом сети Еврохенд / Мюнхен</title>
+
+  <style>
+    :root {
+      --accent: #6d42d8;
+      --accent-dark: #4e2ca8;
+      --accent-soft: #eee8ff;
+      --green: #25875d;
+      --green-soft: #e8f7ef;
+      --yellow: #b97900;
+      --yellow-soft: #fff5da;
+      --red: #b84747;
+      --red-soft: #fff0f0;
+      --text: #242424;
+      --muted: #6d6d6d;
+      --line: #e7e7e7;
+      --surface: #ffffff;
+      --background: #f6f7fb;
+      --sidebar-width: 310px;
+      --radius: 16px;
+      --shadow: 0 10px 32px rgba(34, 26, 61, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--background);
+      font-family: Inter, Arial, sans-serif;
+      line-height: 1.65;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 24px 18px;
+      color: #fff;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,.17), transparent 34%),
+        linear-gradient(165deg, #6d42d8, #32186f);
+    }
+
+    .brand {
+      padding: 8px 10px 22px;
+    }
+
+    .brand__eyebrow {
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      opacity: .72;
+    }
+
+    .brand__title {
+      margin: 0;
+      font-size: 23px;
+      line-height: 1.2;
+    }
+
+    .brand__subtitle {
+      margin: 10px 0 0;
+      font-size: 13px;
+      opacity: .8;
+    }
+
+    .search {
+      width: 100%;
+      margin: 4px 0 18px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 12px;
+      outline: none;
+      color: #fff;
+      background: rgba(255,255,255,.12);
+    }
+
+    .search::placeholder {
+      color: rgba(255,255,255,.68);
+    }
+
+    .nav-title {
+      margin: 20px 10px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      opacity: .58;
+    }
+
+    .nav-link {
+      display: block;
+      margin: 3px 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      color: rgba(255,255,255,.86);
+      font-size: 14px;
+      text-decoration: none;
+      transition: .2s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: #fff;
+      background: rgba(255,255,255,.14);
+      transform: translateX(2px);
+    }
+
+    .main {
+      min-width: 0;
+      padding: 32px;
+    }
+
+    .container {
+      width: min(1100px, 100%);
+      margin: 0 auto;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 330px;
+      margin-bottom: 28px;
+      padding: 48px;
+      border-radius: 26px;
+      color: #fff;
+      background:
+        linear-gradient(115deg, rgba(20,10,58,.15), rgba(20,10,58,.72)),
+        linear-gradient(135deg, #875fe5, #3b197f);
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      position: absolute;
+      right: -70px;
+      bottom: -100px;
+      width: 330px;
+      height: 330px;
+      border: 55px solid rgba(255,255,255,.08);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      margin-bottom: 18px;
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(255,255,255,.12);
+    }
+
+    .hero h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: 1.04;
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin: 20px 0 0;
+      font-size: 18px;
+      opacity: .9;
+    }
+
+    .hero__quote {
+      max-width: 720px;
+      margin-top: 26px;
+      padding-left: 18px;
+      border-left: 4px solid rgba(255,255,255,.75);
+      font-weight: 700;
+    }
+
+    .section {
+      scroll-margin-top: 24px;
+      margin: 24px 0;
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .section[hidden] {
+      display: none;
+    }
+
+    .section__number {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.15;
+    }
+
+    h3 {
+      margin-top: 30px;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    h4 {
+      margin: 22px 0 8px;
+      font-size: 17px;
+    }
+
+    .lead {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .main-question {
+      margin: 22px 0 28px;
+      padding: 20px 22px;
+      border-left: 5px solid var(--accent);
+      border-radius: 0 14px 14px 0;
+      background: var(--accent-soft);
+      font-size: 18px;
+      font-weight: 750;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid--3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .card h4 {
+      margin-top: 0;
+    }
+
+    .card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .callout {
+      margin: 20px 0;
+      padding: 18px 20px;
+      border-radius: 14px;
+    }
+
+    .callout--success {
+      color: #155f3f;
+      background: var(--green-soft);
+    }
+
+    .callout--warning {
+      color: #795000;
+      background: var(--yellow-soft);
+    }
+
+    .callout--danger {
+      color: #8f3333;
+      background: var(--red-soft);
+    }
+
+    .callout--info {
+      color: #3e267d;
+      background: var(--accent-soft);
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    ul,
+    ol {
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 7px 0;
+    }
+
+    .step-list {
+      padding: 0;
+      counter-reset: steps;
+      list-style: none;
+    }
+
+    .step-list li {
+      position: relative;
+      min-height: 48px;
+      margin: 13px 0;
+      padding: 11px 12px 11px 58px;
+      border-radius: 12px;
+      background: #f8f8fc;
+    }
+
+    .step-list li::before {
+      position: absolute;
+      top: 9px;
+      left: 12px;
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--accent);
+      counter-increment: steps;
+      content: counter(steps);
+      font-weight: 800;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 18px 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #40306f;
+      background: #f3f0fb;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    details {
+      margin: 12px 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    summary {
+      padding: 15px 18px;
+      cursor: pointer;
+      color: #3e267d;
+      font-weight: 750;
+    }
+
+    details > div {
+      padding: 0 18px 16px;
+    }
+
+    .checklist {
+      padding: 0;
+      list-style: none;
+    }
+
+    .checklist li {
+      position: relative;
+      padding-left: 30px;
+    }
+
+    .checklist li::before {
+      position: absolute;
+      left: 0;
+      content: "□";
+      color: var(--accent);
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .tag {
+      display: inline-flex;
+      margin: 3px 4px 3px 0;
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: #4a2b99;
+      background: var(--accent-soft);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .visual-placeholder {
+      display: grid;
+      min-height: 145px;
+      margin: 12px 0;
+      padding: 20px;
+      place-items: center;
+      border: 2px dashed #cfc7e4;
+      border-radius: 14px;
+      color: var(--muted);
+      text-align: center;
+      background: #faf9fd;
+    }
+
+    .chapter-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 32px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+
+    .chapter-nav a {
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .top-button {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 5;
+      display: none;
+      width: 46px;
+      height: 46px;
+      border: 0;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--accent);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
+
+    .mobile-menu {
+      display: none;
+      width: 100%;
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border: 0;
+      border-radius: 12px;
+      color: #fff;
+      background: var(--accent);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .search-status {
+      display: none;
+      margin: 0 0 18px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--yellow-soft);
+    }
+
+    mark {
+      border-radius: 3px;
+      background: #ffe38c;
+    }
+
+    .footer {
+      padding: 36px 4px 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        display: block;
+      }
+
+      .sidebar {
+        position: fixed;
+        z-index: 20;
+        width: min(340px, 86vw);
+        transform: translateX(-104%);
+        transition: transform .25s ease;
+        box-shadow: 10px 0 30px rgba(0,0,0,.2);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main {
+        padding: 18px;
+      }
+
+      .mobile-menu {
+        display: block;
+      }
+
+      .hero {
+        padding: 34px 24px;
+      }
+
+      .section {
+        padding: 24px 19px;
+      }
+
+      .grid,
+      .grid--3 {
+        grid-template-columns: 1fr;
+      }
+
+      .items-gallery {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      .sidebar,
+      .mobile-menu,
+      .top-button,
+      .chapter-nav,
+      .search-status {
+        display: none !important;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .main {
+        padding: 0;
+      }
+
+      .section,
+      .hero {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+
+      .hero {
+        color: #111;
+        background: #fff;
+        border: 1px solid #ccc;
+      }
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .items-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin: 24px 0 0;
+    }
+
+    .items-gallery .gallery__item {
+      min-width: 0;
+    }
+
+    .items-gallery .gallery__image {
+      aspect-ratio: 3/4;
+      object-fit: contain;
+    }
+
+    .items-category {
+      margin-top: 48px;
+    }
+
+    .items-category__title {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 900px) {
+      .items-gallery {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gallery__item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .gallery__image {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      background: #fafafa;
+      border-radius: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery__item:hover .gallery__image {
+      transform: scale(1.05);
+    }
+
+    .gallery__caption {
+      padding: 12px 8px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--text);
+      text-align: center;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      overflow: auto;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal.open {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal__content {
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .modal__image {
+      max-width: 90vw;
+      max-height: 80vh;
+      object-fit: contain;
+    }
+
+    .modal__caption {
+      color: #fff;
+      padding: 16px;
+      text-align: center;
+      font-size: 16px;
+      margin-top: 12px;
+    }
+
+    .modal__close {
+      position: absolute;
+      top: 16px;
+      right: 32px;
+      color: #f1f1f1;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      background: none;
+      border: none;
+      transition: color 0.3s ease;
+    }
+
+    .modal__close:hover {
+      color: #bbb;
+    }
+
+    .gallery-banner {
+      padding: 32px 24px;
+      border-radius: 16px;
+      margin: 24px 0;
+      text-align: center;
+    }
+
+    .gallery-banner--good {
+      background-color: var(--green-soft);
+      color: var(--green);
+    }
+
+    .gallery-banner--bad {
+      background-color: var(--red-soft);
+      color: var(--red);
+      margin-top: 48px;
+    }
+
+    .gallery-banner__title {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .gallery-banner__subtitle {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 900px) {
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand__eyebrow">Внутренняя база знаний</div>
+        <h1 class="brand__title">Стандарты работы с контентом</h1>
+        <p class="brand__subtitle">Сеть Еврохенд / Мюнхен</p>
+      </div>
+
+```
+  <input
+    class="search"
+    id="search"
+    type="search"
+    placeholder="Найти тему..."
+    aria-label="Поиск по энциклопедии"
+  >
+
+  <div class="nav-title">Начало</div>
+  <a class="nav-link" href="#home">Главная</a>
+  <a class="nav-link" href="#how-to-use">Как пользоваться</a>
+
+  <div class="nav-title">Обучение</div>
+  <a class="nav-link" href="#chapter-1">1. Зачем магазину соцсети</a>
+  <a class="nav-link" href="#chapter-2">2. Контентная система сети</a>
+  <a class="nav-link" href="#chapter-3">3. Организация контента</a>
+  <a class="nav-link" href="#chapter-4">4. Выбор вещей</a>
+  <a class="nav-link" href="#chapter-5">5. Создание образов</a>
+  <a class="nav-link" href="#chapter-6">6. Фотография</a>
+  <a class="nav-link" href="#chapter-7">7. Анонс нового завоза</a>
+  <a class="nav-link" href="#chapter-8">8. Публикация и продвижение</a>
+  <a class="nav-link" href="#chapter-9">9. Контроль качества</a>
+  <a class="nav-link" href="#chapter-10">10. Частые ошибки</a>
+
+  <div class="nav-title">Быстрый доступ</div>
+  <a class="nav-link" href="#weekly-cycle">Цикл подготовки</a>
+  <a class="nav-link" href="#photo-checklist">Чек-лист фотографии</a>
+  <a class="nav-link" href="#announcement-checklist">Чек-лист анонса</a>
+  <a class="nav-link" href="#final-checklist">Чек-лист директора</a>
+</aside>
+
+<main class="main">
+  <button class="mobile-menu" id="mobileMenu">☰ Открыть содержание</button>
+
+  <div class="container">
+    <div class="search-status" id="searchStatus"></div>
+
+    <header class="hero" id="home">
+      <div class="hero__badge">Первая редакция</div>
+      <h1>Стандарты работы с контентом сети</h1>
+      <p>
+        Краткая практическая энциклопедия для директоров и локальных SMM-специалистов:
+        от выбора вещей до публикации и продвижения контента.
+      </p>
+      <div class="hero__quote">
+        Наша задача — не просто показать одежду, а создать желание приехать
+        в магазин, найти уникальную вещь и купить её по выгодной цене.
+      </div>
+    </header>
+
+    <section class="section searchable" id="how-to-use">
+      <span class="section__number">Как пользоваться</span>
+      <h2>Навигация по энциклопедии</h2>
+      <p class="lead">
+        Необязательно читать книгу подряд. Откройте нужный урок через меню,
+        используйте поиск или перейдите сразу к чек-листу.
+      </p>
+
+      <div class="grid grid--3">
+        <div class="card">
+          <h4>Новый директор/ Новый смм</h4>
+          <p>Изучает разделы последовательно: от целей соцсетей до самопроверки.</p>
+        </div>
+        <div class="card">
+          <h4>Перед съёмкой</h4>
+          <p>Открывает раздел о выборе вещей, образах, фотографии или анонсе.</p>
+        </div>
+        <div class="card">
+          <h4>Перед публикацией</h4>
+          <p>Использует чек-листы и проверяет соответствие стандартам сети.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section searchable" id="chapter-1">
+      <span class="section__number">Раздел 1</span>
+      <h2>Зачем магазину соцсети</h2>
+
+      <div class="main-question">
+        Главный вопрос: почему контент влияет на продажи и зачем директору заниматься соцсетями?
+      </div>
+
+      <p>
+        Постоянные клиенты уже знают магазин. Социальные сети нужны прежде всего
+        для привлечения новой аудитории и последовательного знакомства человека с брендом.
+      </p>
+
+      <ol class="step-list">
+        <li>Человек впервые видит публикацию магазина.</li>
+        <li>Знакомится с ассортиментом, стилем и преимуществами сети.</li>
+        <li>Подписывается на группу и рассылку.</li>
+        <li>Регулярно видит контент и становится лояльнее к бренду.</li>
+        <li>Приходит в магазин, примеряет вещи и совершает покупку.</li>
+      </ol>
+
+      <h3>Что продают наши соцсети</h3>
+
+      <div class="grid">
+        <div class="card">
+          <h4>Выгодные находки</h4>
+          <p>Трендовые, брендовые и уникальные вещи по привлекательной цене.</p>
+        </div>
+        <div class="card">
+          <h4>Большой ассортимент</h4>
+          <p>Место, где можно искать одежду под разные задачи, стили и сезоны.</p>
+        </div>
+        <div class="card">
+          <h4>Эмоцию поиска</h4>
+          <p>Ощущение, что в магазине можно найти редкую вещь раньше других.</p>
+        </div>
+        <div class="card">
+          <h4>Причину приехать сейчас</h4>
+          <p>В первые дни завоза ассортимент максимальный, а лучшие вещи ещё не разобраны.</p>
+        </div>
+      </div>
+
+      <h3>Почему важны первые дни завоза</h3>
+
+      <p>
+        Цикл начинается без скидки. Затем скидка постепенно увеличивается от 10% до 90%.
+        Чем раньше продана вещь, тем выше её вклад в выручку магазина. Поэтому контент
+        должен заранее показать ценность завоза и убедить человека приехать в первые дни.
+      </p>
+
+      <div class="callout callout--success">
+        <strong>Главный ориентир</strong>
+        После просмотра группы человек должен понять, что поездка в магазин окупится:
+        там есть актуальные, качественные и уникальные вещи по выгодной цене.
+      </div>
+
+      <h3>Как выглядит сильная группа</h3>
+
+      <ul>
+        <li>контент выходит регулярно и без пропусков;</li>
+        <li>публикуются реальные вещи, а не только информационные макеты;</li>
+        <li>используются разные форматы;</li>
+        <li>образы выглядят актуально, гармонично и сезонно;</li>
+        <li>показываются бренды и премиальные находки;</li>
+        <li>группа помогает аудитории понимать, что сейчас актуально;</li>
+        <li>каждая публикация даёт повод подписаться, приехать или купить.</li>
+      </ul>
+
+      <div class="chapter-nav">
+        <span></span>
+        <a href="#chapter-2">Следующий раздел →</a>
+      </div>
+    </section>
+
+    <section class="section searchable" id="chapter-2">
+      <span class="section__number">Раздел 2</span>
+      <h2>Контентная система сети</h2>
+
+      <div class="main-question">
+        Главный вопрос: какие типы контента существуют и какую задачу решает каждый из них?
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Тип контента</th>
+              <th>Главная задача</th>
+              <th>Для чего нужен</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Анонс нового завоза</td>
+              <td>Продажи</td>
+              <td>Создать желание приехать в первые дни и увидеть полный ассортимент.</td>
+            </tr>
+            <tr>
+              <td>Образы на фотофоне</td>
+              <td>Продажи и удержание</td>
+              <td>Показать современные сочетания и помочь представить вещи в гардеробе.</td>
+            </tr>
+            <tr>
+              <td>Продавец с образами</td>
+              <td>Рост и продажи</td>
+              <td>Живой формат с высоким потенциалом органических охватов.</td>
+            </tr>
+            <tr>
+              <td>Брендовые находки</td>
+              <td>Продажи</td>
+              <td>Привлечь бренд-хантеров, перекупов и покупателей премиальных вещей.</td>
+            </tr>
+            <tr>
+              <td>Фото обуви</td>
+              <td>Продажи</td>
+              <td>Подробно показать модель, размер и важные детали.</td>
+            </tr>
+            <tr>
+              <td>Фото зала</td>
+              <td>Продажи и доверие</td>
+              <td>Продемонстрировать масштаб и наполненность магазина.</td>
+            </tr>
+            <tr>
+              <td>Развлекательный контент</td>
+              <td>Рост</td>
+              <td>Получать охваты, делать группу живой и привлекать новую аудиторию.</td>
+            </tr>
+            <tr>
+              <td>Информационные публикации</td>
+              <td>Информирование</td>
+              <td>Сообщать о скидках, акциях, графике и секретных распродажах.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Четыре задачи контента</h3>
+
+      <div class="grid">
+        <div class="card">
+          <h4>Рост</h4>
+          <p>Охваты, новые подписчики, вирусность, вовлечение.</p>
+        </div>
+        <div class="card">
+          <h4>Продажи</h4>
+          <p>Посещение магазина, интерес к завозу, желание купить без ожидания большой скидки.</p>
+        </div>
+        <div class="card">
+          <h4>Доверие</h4>
+          <p>Ощущение активного, настоящего и конкурентоспособного магазина.</p>
+        </div>
+        <div class="card">
+          <h4>Удержание</h4>
+          <p>Причина регулярно возвращаться в группу и следить за ассортиментом.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--warning">
+        <strong>Важно</strong>
+        Макет со скидкой не заменяет товарную публикацию. Основу группы должен составлять
+        реальный ассортимент: вещи, образы, обувь, бренды и наполненный зал.
+      </div>
+
+      <div class="chapter-nav">
+        <a href="#chapter-1">← Предыдущий раздел</a>
+        <a href="#chapter-3">Следующий раздел →</a>
+      </div>
+    </section>
+
+    <section class="section searchable" id="chapter-3">
+      <span class="section__number">Раздел 3</span>
+      <h2>Организация работы с контентом</h2>
+
+      <div class="main-question">
+        Главный вопрос: когда и в каком порядке готовить контент, чтобы он выходил регулярно?
+      </div>
+
+      <h3 id="weekly-cycle">Цикл подготовки перед субботним завозом</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Период</th>
+              <th>Что необходимо сделать</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Суббота–воскресенье</td>
+              <td>Начать подготовку анонса, отбор сильных и брендовых вещей.</td>
+            </tr>
+            <tr>
+              <td>К понедельнику</td>
+              <td>Вещи для анонса и фотообзоров уже должны быть отобраны.</td>
+            </tr>
+            <tr>
+              <td>Понедельник–вторник</td>
+              <td>Снять фотообзоры. Завершить и согласовать анонс.</td>
+            </tr>
+            <tr>
+              <td>Вторник–пятница</td>
+              <td>Показывать самые сильные женские, мужские и брендовые подборки нового завоза.</td>
+            </tr>
+            <tr>
+              <td>Среда–четверг</td>
+              <td>Подготовить рассылки.</td>
+            </tr>
+            <tr>
+              <td>Суббота–воскресенье</td>
+              <td>Продолжить публикацию товарных обзоров и поддерживать интерес к завозу.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Минимум публикаций</h3>
+
+      <div class="grid">
+        <div class="card">
+          <h4>Перед новым завозом</h4>
+          <p><strong>Рекомендуется три товарные публикации в день.</strong></p>
+          <p>Например: женские образы, мужские образы, обувь или брендовые находки.</p>
+        </div>
+        <div class="card">
+          <h4>После нового завоза</h4>
+          <p><strong>Минимум две товарные публикации в день.</strong></p>
+          <p>Макеты и объявления не входят в этот минимум.</p>
+        </div>
+      </div>
+
+      <h3>Как подготовить запас контента</h3>
+
+      <ol class="step-list">
+        <li>В начале недели отобрать максимально возможное количество сильных вещей.</li>
+        <li>Сразу распределить их по женским, мужским, брендовым и обувным подборкам.</li>
+        <li>Собрать образы и снять несколько публикаций за один подход.</li>
+        <li>Подписать цены и довести фотографии до готового состояния.</li>
+        <li>Распределить публикации так, чтобы их хватило на весь цикл.</li>
+      </ol>
+
+      <div class="callout callout--info">
+        <strong>Главная привычка сильного директора</strong>
+        Готовить контент заранее и регулярно. Не ждать дня публикации, чтобы решить,
+        что сегодня фотографировать.
+      </div>
+
+      <h3>Города с двумя магазинами</h3>
+
+      <p>
+        Если два магазина работают в одном городе по двухнедельному циклу, после завершения
+        активного периода одного магазина контентную эстафету принимает второй магазин.
+        Если магазин один, он поддерживает товарный контент в течение двух или трёх недель
+        в зависимости от своего цикла.
+      </p>
+
+      <div class="chapter-nav">
+        <a href="#chapter-2">← Предыдущий раздел</a>
+        <a href="#chapter-4">Следующий раздел →</a>
+      </div>
+    </section>
+
+    <section class="section searchable" id="chapter-4">
+      <span class="section__number">Раздел 4</span>
+      <h2>Выбор вещей для контента</h2>
+
+      <div class="main-question">
+        Главный вопрос: какие вещи стоит показывать, чтобы контент продавал новый завоз?
+      </div>
+
+      <h3>Как начинается отбор</h3>
+
+      <p>
+        Склад заранее подготавливает наиболее яркие, красивые, актуальные, трендовые
+        и брендовые вещи. После этого директор распределяет их по категориям.
+      </p>
+
+      <ol class="step-list">
+        <li>Премиальные и брендовые вещи — отдельная подборка для анонса.</li>
+        <li>Женские вещи — низы, верха и второй слой.</li>
+        <li>Платья и костюмы — отдельные категории.</li>
+        <li>Мужские вещи — отдельная подборка.</li>
+        <li>Актуальная и брендовая обувь.</li>
+      </ol>
+
+      <h3>Критерии сильной вещи</h3>
+
+      <ul>
+        <li>актуальный или базовый крой;</li>
+        <li>хорошее состояние без загрязнений и повреждений;</li>
+        <li>сезонность;</li>
+        <li>яркий, чистый или универсальный базовый цвет;</li>
+        <li>возможность составить современный образ;</li>
+        <li>интересный бренд, принт, фактура или деталь;</li>
+        <li>носибельность для целевой аудитории 27-55 лет.</li>
+      </ul>
+
+      <div class="gallery-banner gallery-banner--good">
+        <div class="gallery-banner__title">✅ АКТУАЛЬНЫЕ ВЕЩИ</div>
+        <div class="gallery-banner__subtitle">Примеры современных фасонов, которые подходят для контента.</div>
+      </div>
+      <div id="current-items-categories"></div>
+
+      <div style="height: 72px" aria-hidden="true"></div>
+
+      <div class="gallery-banner gallery-banner--bad">
+        <div class="gallery-banner__title">❌ НЕАКТУАЛЬНЫЕ ВЕЩИ</div>
+        <div class="gallery-banner__subtitle">Примеры устаревших фасонов, которые не следует выбирать для контента.</div>
+      </div>
+      <div id="outdated-items-categories"></div>
+      <script>
+        const clothingCategories = ['Джинсы', 'Пиджаки', 'Платья', 'Рубашки', 'Трикотаж', 'Юбки'];
+        const currentClothing = {
+          'Джинсы': ['4349ed4c737f7e505513f98b29444b55.jpg'],
+          'Пиджаки': ['0cf648135f781042c385551dd64e6b29.jpg','15b8e60f7a5234ca2344ae63e8c95e93.jpg','46d57989d18af314441ccad807ce6721.jpg','57b29cb079a9f115ff82e91f55acd799.jpg','6b4d0da19b29c19e66a31eff88e765f6.jpg','86d181680d5179d6ec20e5781af6bd29.jpg','87ee7c9927c8634e7074b46cba57c95d.jpg','b0d8426465ba834aae295f9475d24575.jpg','b9f5ea84d6810fb7d335576962883cdf.jpg','bae78cb9863f39628d31df1163dce21f.jpg'],
+          'Платья': ['04c4d739fbcf22d98473cbdc93a8a668.jpg','1c066a4076df114a981b0a642137514a.jpg','37178aa1dc3b139f435e863713cb6fc0.jpg','37273535611ff148487774b4b048a71a.jpg','3ac709ceb9cf30d869531b80c4318c76.jpg','446fa93214b8d02a5f6dd480715d03e0.jpg','62d846a974cca6eae00b8903896c3aae.jpg','703cc7bbdd6baa3093a6bef81cf72159.jpg','84079a5a5cae37cf3224e9a149984bff.jpg','9e4eb43a4cd46c9d9d9243549fcf4e8b.jpg','be294772e19332182a22ae6882b38814.jpg'],
+          'Рубашки': ['01442ffa96dbeaa43b35fe39446f3db0.jpg','4408fae909d7b6d55cd808a4c05398cc.jpg','4c458cd76e479f1be0a9e7cccae10bf2.jpg','8486a041ff11a43e6094f66b2a24c7b3.jpg','9d9c4eaf0f7d2777eade55fa8ae4aa88.jpg','a09f06ef7f0732f2aad1a0f43c1df612.jpg','b56050a88fd4e7b7e1a3058c3174ea11.jpg','bfaf878bb8103f13e5cc5ff2951921c8.jpg','e1531abe5e5c96128b2c9024257a00fd.jpg','efd1b05b3d2bfef9dd51cb71e897b89f.jpg','f8c15451dd9259909a98a568ef7fe348.jpg'],
+          'Трикотаж': ['0a797fbee694260922525c081ee0b2eb.jpg','1fc3c8092a4d09f57cf83db6be3be388.jpg','683e599d36fc7c8c6da68381aecdafbb.jpg','6d36cab20ca65e047140687a485c4632.jpg','8aa0998db591935fcd0c601daddfa077.jpg','a322b0c3e11906cf326c1e8a1974f541.jpg','a656042c4b27edf7cf259a145520328e.jpg','ad66fb77f097c6b7e4b06fa62c68a0d9.jpg','c662c38dafffa0376298d898c89e61b1.jpg','de3f4e6ceb7adc428f32e1cf14735c38.jpg','e5ab78a9fbaafd8b5c996ac9b2d88bb4.jpg'],
+          'Юбки': ['0b5bf417f4e1366405cee7c2cd9b6153.jpg','0e122a5347d4f47748403812af8795ef.jpg','1776aaef23215203428a24e6923096d0.jpg','1ba2c78450ac9c594be15c0a52c085bf.jpg','1bc97743e4832a395c39b6aec6b229dd.jpg','278c69911af353bf9cad6838e2e3ef54.jpg','30646af6161a9b85097a418b423513d7.jpg','4641452f56949e6d12b0d6049fe646da.jpg','4bb1a87de759f628691cf6a7cb0ff431.jpg','568fe9b58c739e300e8fa6395723835b.jpg','6be8263f89b3246746e136bd8a8913c0.jpg','727a5b0045aa3f6f9824af3935dc7814.jpg','8ef51645c21dc1323436452ba81bbd48.jpg','a8b044cd4cf03cb57d6159238b1ce273.jpg','c66d6b172d199404d40168a612ac29da.jpg','c92075c741f7880436eefa0695542559.jpg','cd2e97d820ee07485f559b5a0e34ee02.jpg']
+        };
+        const outdatedClothing = {
+          'Джинсы': ['4adcba845cb268eee38d4ded80d1f191.jpg'],
+          'Пиджаки': ['1f44621aa3998ec899f515d7bc9479b3.jpg','253f6e21326c70d3f2538743595976a9.jpg','a8832586be881ca3d856003415f4b1b8.jpg','ba9397664d856bc8bf03973780830aa2.jpg','c151606302c76239d227fd5f0ef2ea11.jpg','c39c2afa80fb497bc7c97c7c0f280466.jpg'],
+          'Платья': ['04ef0e808cf30374a9ec16f1dadfb516.jpg','0b30ae430712e49b04e98bb94d6f43c6.jpg','27f56da775a4556dcb30a3b1991c4e9a.jpg','479f451afee4c855610b197f51a67689.jpg','4d11b574dfd4f6140fb1cad9284d72e5.jpg','8007d3210af42a25da60d1ef13bb4235.jpg','853bcf8070dcef1184ab3d1f305460bf.jpg','8811fa26762ac2614bd0ba1667943136.jpg','96fc56ec1b8a4fd777af2ecda4324d6f.jpg','cdd74ce99f6235b227314f7d8ff527ab.jpg','da7503ab55420fd5fe35241daf89f2f5.jpg','e78ef1841b51ba4e238cf6b55ae7de07.jpg','fe162ed633806c28360b318a76e5092e.jpg'],
+          'Рубашки': ['089214c806db728ccfd5528847032cc4.jpg','3b8e9c80367dda173288cd54532e9526.jpg','4f01ac903c0f2864ef033e2f54bbcde1.jpg','5734634f971728d990fdeb8c874b8999.jpg','5dacff037b92250493347981b3678abf.jpg','61fe5b2f3f792446ec24fe439eaff3c5.jpg','84d1ffeaa802a63cb042647377a80094.jpg','97c689ad5f27056497a18c11871bd309.jpg','9f56dc53bc5a93b1955e081f4ebb6a63.jpg','b0ed71157a71479c2319f2c97109169d.jpg','c7161b4f71f11e64c5f8148221e77604.jpg','df55a3bccefb0b271d1bb77fdaa288ae.jpg','e79521a6871c3775b279efa87421b953.jpg','f37a6eb081f815f1f7c06930d797d90a.jpg','f539cb53a4ae54e28993ff3eda8af3a3.jpg'],
+          'Трикотаж': ['11e4568a2ca3485737bd1c96a861a21e.jpg','16c8f0a78aaf8a3f522a752579da94db.jpg','22267675075ec78d20180ddd0e073713.jpg','2c55cf0703621495ff5f4c1b7e0b78d3.jpg','4ad949b37a042348373c32ab7b221c94.jpg','993f1b2ddcb84b94e931d1ef6f9e9052.jpg','a1bf54ca757d8a0369c6c7c842befd17.jpg','a625e707d3ceeffc7c04fd51e7b27d6b.jpg','aa04b603e963e9220db3faaf9c8202fa.jpg','bb374b139072c1baed215d6e17dd3c48.jpg','ee082daa314dcfe9715318ea6ea7e6f5.jpg'],
+          'Юбки': ['0a5d528f06fcc4ebdc18a7d0567c8d97.jpg','132298e4a29c9f283bcadbf61325f237.jpg','3d0be80eedb997b572c3c5ac143b7539.jpg','436c52f6f15801d1a79231798d4868a4.jpg','5cc9d5529cc677307c02d049d976e835.jpg','6a6ea17c125d2a71d4f07c0b7e7ccbc2.jpg','7ee9f99ef0aac49f1cf248b1c9843e7e.jpg','a6d9ae3529de818108f5a452c0ee4114.jpg','aaadc04be5313d226a06dc3ba498cf2f.jpg','ac213fd84f1361d1ef504d8871fedd43.jpg','b09f0e9976604f867647b5bd3b44359a.jpg','b34859ac0bbd84088add323fb2e460da.jpg']
+        };
+        function renderClothingCategories(id, folder, categories, label) {
+          document.getElementById(id).innerHTML = clothingCategories.map(category => {
+            const items = categories[category].map(file => {
+              const src = `${folder}/${category}/${file}`;
+              return `<div class="gallery__item" onclick="openModal('${src}', '${label}')"><img class="gallery__image" src="${src}" alt="${label}"></div>`;
+            }).join('');
+            return `<div class="items-category"><h3 class="items-category__title">${category}</h3><div class="items-gallery">${items}</div></div>`;
+          }).join('');
+        }
+        function renderItems(id, folder, files, label) { document.getElementById(id).innerHTML = files.map(file => { const src = folder + '/' + file; return `<div class="gallery__item" onclick="openModal('${src}', '${label}')"><img class="gallery__image" src="${src}" alt="${label}"></div>`; }).join(''); }
+        renderClothingCategories('current-items-categories', 'Актуальные категории одежды', currentClothing, 'Актуальная вещь');
+        renderClothingCategories('outdated-items-categories', 'Неактульные категории одежды', outdatedClothing, 'Неактуальная вещь');
+      </script>
+
+      <h3>Цвет</h3>
+
+      <p>
+        В контенте нужны сочные и привлекательные сочетания. Важно использовать яркие цвета и их сочетания:
+        жёлтый, белый, розовый, зелёный, сиреневый, красный и оранжевый. Ахроматы
+        — белый, чёрный и бежевый — допустимы как база, но образ не должен выглядеть
+        серым и унылым.
+      </p>
+
+      <div class="gallery-banner gallery-banner--good">
+        <div class="gallery-banner__title">✅ АКТУАЛЬНЫЕ ЦВЕТОВЫЕ СОЧЕТАНИЯ</div>
+        <div class="gallery-banner__subtitle">Примеры ярких, гармоничных и современных цветовых сочетаний.</div>
+      </div>
+      <div class="items-gallery" id="color-items-gallery"></div>
+      <script>
+        const colorItems = ['040e5cbf2d3fc5d72a767d18f2ef80c7.jpg','20bc6baa007368176cb4c934fde0d2dd.jpg','2105ee892562ba1d2febb1d8f40838de.jpg','3227dcdadec91732eea419d70a6e00cf.jpg','3438fd1e88ff50d2c322e33cf29cbce2.jpg','35498aea2c8122f19de4a72985095b0c.jpg','3d6f3a545885e559bbf085639a1a5802.jpg','3f778ad0dc5d43d86e2dc7bec9cad466.jpg','58e66f121041df839a34ed99f76cb7ef.jpg','64e0a85f137b130d4962fad2a41a0555.jpg','654485c53bf32f7bbe3d054ca169b22c.jpg','677808e4600807ee4b97808cdd03d79a.jpg','6c91da54469f2aefbb91529aa5d82140.jpg','6f7ac2dcfbc53d2f4a9171c586531869.jpg','72f6ce810531560200bbec195ab0e17b.jpg','764987cd09d94dc852f009ee79b8ecfe.jpg','7efc4c576c6815ca5996c8d28955f15b.jpg','7fe7cf71a82acc8b059e5cc4fc20a7ab.jpg','833c6d7400a5c0725c3531ed6bbbe325.jpg','85af956de3e515fc80389a76f9768b1b.jpg','86160fdda8f5dcfc943e7079aaf6deb9.jpg','86f5ef65445a168ffa314b3f6d886fbe.jpg','9193caa4f0fd0291c23a55476651b636.jpg','91bf9966fe9dd8ac9915aa934c5eaa6a.jpg','9c45f7d0c147f69fd5714ea2d204accb.jpg','9e376d855911a780235d386ebdb9b59d.jpg','9fef37c70e078c815a813371387a60fa.jpg','a82ab5183dd7ad33f8e0e92c46599f4d.jpg','bb4088ce5b238e41315c2d3c07e230d7.jpg','c35e91b28f72c7ade6ae17046f1c6144.jpg','d4516055aaf4a0bce48039445534c8b0.jpg','dcdc6a5e39cf35cba5fc56096d83033f.jpg','de0b75d7bb3ad05163c9453a2d470912.jpg','e164cc393d76b66b11d0cdcb45cebaec.jpg','e67ed981843f5c35f1c9708f5cf0ea9b.jpg','f017f2619749e17fcd68544efe30dfd0.jpg','f3cfe66746a3b8cc0bb9a8d408c0afec.jpg','fe2ef88ce24093d23ba4ea00e2d6d1b2.jpg'];
+        renderItems('color-items-gallery', 'images/Цвет', colorItems, 'Цветовое сочетание');
+      </script>
+
+      <div class="callout callout--warning">
+        <strong>Не путайте яркость с неоном</strong>
+        Цвет должен быть чистым и привлекательным, но не обязательно кислотным или чрезмерно резким.
+      </div>
+
+      <h3>Приоритеты зависят от задачи</h3>
+
+      <div class="grid">
+        <div class="card">
+          <h4>Для премиальной подборки</h4>
+          <p>На первом месте бренд, его узнаваемость и ценность.</p>
+        </div>
+        <div class="card">
+          <h4>Для трендового образа</h4>
+          <p>На первом месте актуальность фасона и гармония сочетания.</p>
+        </div>
+      </div>
+
+      <h3>Что нельзя использовать</h3>
+
+      <ul>
+        <li>грязные, рваные и сильно повреждённые вещи;</li>
+        <li>очевидно устаревшие фасоны;</li>
+        <li>вещи, которые невозможно выгодно показать;</li>
+        <li>слабые позиции без ценности для покупателя;</li>
+        <li>случайный набор вещей, не складывающийся в образ.</li>
+      </ul>
+
+      <div class="callout callout--info">
+        <strong>Исключение</strong>
+        Редкая премиальная брендовая вещь может быть интересна аудитории даже при менее
+        актуальном фасоне, если её ценность правильно объяснена.
+      </div>
+
+      <div class="chapter-nav">
+        <a href="#chapter-3">← Предыдущий раздел</a>
+        <a href="#chapter-5">Следующий раздел →</a>
+      </div>
+    </section>
+
+    <section class="section searchable" id="chapter-5">
+      <span class="section__number">Раздел 5</span>
+      <h2>Создание современных образов</h2>
+
+      <div class="main-question">
+        Главный вопрос: как собрать гармоничный образ, который вызовет желание купить вещи?
+      </div>
+
+      <h3>Алгоритм сборки</h3>
+
+      <ol class="step-list">
+        <li>Выбрать актуальный низ: брюки, джинсы, юбку или шорты.</li>
+        <li>Подобрать подходящий верх.</li>
+        <li>При необходимости добавить второй слой: пиджак, джинсовку, рубашку, жилет.</li>
+        <li>Добавить обувь и аксессуары, если они усиливают образ.</li>
+        <li>Проверить сочетание цветов, стилей и пропорций.</li>
+        <li>Убедиться, что образ выглядит носибельно и современно.</li>
+      </ol>
+
+      <h3>Основные правила</h3>
+
+      <ul>
+        <li>соединять базовые и акцентные вещи;</li>
+        <li>использовать многослойность;</li>
+        <li>учитывать сезон;</li>
+        <li>выбирать гармоничные цветовые сочетания;</li>
+        <li>не перегружать образ несколькими конкурирующими принтами;</li>
+        <li>подбирать вещи в совместимых стилях;</li>
+        <li>оценивать не каждую вещь отдельно, а итоговый комплект.</li>
+      </ul>
+
+      <h3>Подходящие стили</h3>
+
+      <p>
+        В публикациях можно использовать casual, классику, романтику, бизнес,
+        минимализм, гламур и спортивный стиль. Женские подборки преимущественно
+        строятся вокруг casual, классики и романтики. В мужских подборках доля
+        спортивных вещей может быть выше.
+      </p>
+
+      <h3>Баланс спортивного контента</h3>
+
+      <div class="grid">
+        <div class="card">
+          <h4>Женские подборки</h4>
+          <p>Если подготовлено 11 образов, спортивным может быть примерно один.</p>
+        </div>
+        <div class="card">
+          <h4>Мужские подборки</h4>
+          <p>Допустимо распределение около 50/50, так как спортивных вещей и брендов больше.</p>
+        </div>
+      </div>
+
+      <h3>Мини-капсула для фотообзора</h3>
+
+      <p>
+        Для обзора сначала выбираются низы, затем к каждому подбираются верха и второй слой.
+        Внутри подборки вещи должны сочетаться между собой. Желательно соединять базу,
+        акцентные вещи и один-два интересных принта.
+      </p>
+
+      <h3>Признаки удачного образа</h3>
+
+      <ul>
+        <li>актуальный и сезонный;</li>
+        <li>гармоничный по цветам и стилям;</li>
+        <li>не перегружен;</li>
+        <li>носибелен для реальной жизни;</li>
+        <li>имеет заметный акцент;</li>
+        <li>выглядит завершённо;</li>
+        <li>вызывает желание примерить или купить.</li>
+      </ul>
+
+      <div class="callout callout--danger">
+        <strong>Частая ошибка</strong>
+        Смешивать несовместимые стили или брать несколько красивых вещей,
+        которые вместе создают негармоничный образ.
+      </div>
+
+      <div class="gallery-banner gallery-banner--good">
+        <div class="gallery-banner__title">✅ ГАРМОНИЧНЫЕ ОБРАЗЫ</div>
+        <div class="gallery-banner__subtitle">Примеры удачно собранных образов</div>
+      </div>
+      <div class="items-gallery" id="harmonious-outfits-gallery"></div>
+      <script>
+        const harmoniousOutfits = ['-VXtCB4R5O0.jpg','1iSFPmMEN80.jpg','38yHA1Ptc7I.jpg','48G99vAJC_A.jpg','5FyWxdShmxc.jpg','BAz9G-S_oUU.jpg','BwJqqgXPl0g.jpg','e4EFLMMXK7s.jpg','FPifrBUYHPs.jpg','FTw-yFLyfhU.jpg','gPIRR38NN2s.jpg','jmb7x6q9QO8.jpg','KXSMnkeq5ZU.jpg','mQPMJeWvzfw.jpg','NCU9i6s4I9E.jpg','PpMhWFJMwFk.jpg','PzHJLAXmos8.jpg','qB9HdzsCbQU.jpg','qpzZLAwrSqo.jpg','VDaSqgHupho.jpg','vtLdckp1s9g.jpg'];
+        renderItems('harmonious-outfits-gallery', 'Гармоничные образы', harmoniousOutfits, 'Гармоничный образ');
+      </script>
+
+      <div class="chapter-nav">
+        <a href="#chapter-4">← Предыдущий раздел</a>
+        <a href="#chapter-6">Следующий раздел →</a>
+      </div>
+    </section>
+
+    <section class="section searchable" id="chapter-6">
+      <span class="section__number">Раздел 6</span>
+      <h2>Фотография</h2>
+
+      <div class="main-question">
+        Главный вопрос: как сделать фотографию, которая аккуратно и выгодно показывает товар?
+      </div>
+
+      <h3>Приоритет форматов</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Формат</th>
+              <th>Когда использовать</th>
+              <th>Приоритет</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Образы на сером фотофоне</td>
+              <td>Основной формат до и после завоза</td>
+              <td>Около 90% образов</td>
+            </tr>
+            <tr>
+              <td>Продавец с вещами</td>
+              <td>Живой охватный формат</td>
+              <td>Минимум один пост в неделю</td>
+            </tr>
+            <tr>
+              <td>Вещи на чёрной сетке</td>
+              <td>Быстрый формат на больших скидках</td>
+              <td>Дополнительный</td>
+            </tr>
+            <tr>
+              <td>Фото зала</td>
+              <td>Накануне нового завоза</td>
+              <td>6–9 фотографий</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Технические требования</h3>
+
+      <ul>
+        <li>вертикальный формат: 3:4 или 9:16;</li>
+        <li>для фотообзора допустим формат 1:1;</li>
+        <li>качество не ниже 720 px, предпочтительно 1080 px;</li>
+        <li>камера телефона должна быть чистой;</li>
+        <li>кадр не должен быть пересвеченным, тёмным или блеклым;</li>
+        <li>в кадре не должно быть пола, плитки и лишних объектов.</li>
+      </ul>
+
+      <h3>Фото на фотофоне</h3>
+
+      <ul>
+        <li>вещи полностью отпарены;</li>
+        <li>края футболок, рубашек и других вещей аккуратно подогнуты;</li>
+        <li>каждая вещь хорошо просматривается;</li>
+        <li>нет складок, кучи и случайного наложения;</li>
+        <li>образ располагается по центру;</li>
+        <li>до краёв кадра остаётся свободное пространство;</li>
+        <li>композиция выглядит гармонично.</li>
+      </ul>
+
+      <div class="items-gallery" id="photo-background-gallery"></div>
+      <script>
+        const photoBackgroundItems = ['cHV7vxE1qVI.jpg','G80iHiXHPCk.jpg','ueRF2JYDkVY.jpg','Z7QJlu7qZ_k.jpg','zqC_4SE-20E.jpg'];
+        renderItems('photo-background-gallery', 'Стандарты/Фото на фотофоне', photoBackgroundItems, 'Фото на фотофоне');
+      </script>
+
+      <h3>Продавец с вещами</h3>
+
+      <ul>
+        <li>продавец стоит по центру с небольшим смещением влево;</li>
+        <li>справа оставляется пространство под стикер с ценами;</li>
+        <li>голова не упирается в верх кадра;</li>
+        <li>ноги и одежда не обрезаются случайно;</li>
+        <li>вещи находятся примерно на уровне корпуса;</li>
+        <li>вещи не касаются пола и не закрывают лицо;</li>
+        <li>свет ровный, без бликов и резких теней;</li>
+        <li>в одном посте рекомендуется 6 или 9 фотографий.</li>
+      </ul>
+
+      <div class="items-gallery" id="seller-photo-gallery"></div>
+      <script>
+        const sellerPhotoItems = ['hxXPNMN54h0.jpg','IMG_20260824_183359_650.jpg'];
+        renderItems('seller-photo-gallery', 'Стандарты/Фото с продавцом', sellerPhotoItems, 'Продавец с вещами');
+      </script>
+
+      <h3>Фото обуви</h3>
+
+      <p>
+        Для одной пары создаётся коллаж из четырёх фотографий:
+      </p>
+
+      <ol>
+        <li>общий вид пары спереди;</li>
+        <li>дополнительный ракурс;</li>
+        <li>размер или маркировка;</li>
+        <li>каблук, подошва или интересная деталь.</li>
+      </ol>
+
+      <p>
+        В посте рекомендуется размещать 9 коллажей. Если ассортимент менее сильный,
+        допустимо 6.
+      </p>
+
+      <div class="items-gallery" id="shoe-photo-gallery"></div>
+      <script>
+        const shoePhotoItems = ['rQZMUzk6x48.jpg','Sk0icAVAJgc.jpg'];
+        renderItems('shoe-photo-gallery', 'Стандарты/Фото обуви', shoePhotoItems, 'Фото обуви');
+      </script>
+
+      <h3>Фото зала</h3>
+
+      <div class="items-gallery" id="store-photo-gallery"></div>
+      <script>
+        const storePhotoItems = ['IMG_20260824_183425_421.jpg','MnF0tN06fIU.jpg','ZRx031B352A.jpg'];
+        renderItems('store-photo-gallery', 'Стандарты/Фото зала', storePhotoItems, 'Фото зала');
+      </script>
+
+      <h3>Образ на человеке</h3>
+
+      <div class="items-gallery" id="person-outfit-gallery"></div>
+      <script>
+        const personOutfitItems = ['8lewITZeSlk.jpg','8z1-nIOTsiw.jpg'];
+        renderItems('person-outfit-gallery', 'Стандарты/Образ на человеке', personOutfitItems, 'Образ на человеке');
+      </script>
+
+      <h3>Обработка</h3>
+
+      <p>
+        Если исходник тусклый, можно скорректировать яркость и насыщенность.
+        Фотографию необходимо кадрировать так, чтобы остались только нужные элементы.
+        Обработка должна улучшать фото, но не искажать цвет и вид вещи.
+      </p>
+
+      <h3>Правильно: хорошие раскладки на сером фотофоне</h3>
+
+      <div class="gallery-banner gallery-banner--good">
+        <div class="gallery-banner__title">✅ ПРАВИЛЬНО</div>
+        <div class="gallery-banner__subtitle">Примеры качественных раскладок на сером фотофоне</div>
+      </div>
+
+      <div class="gallery" id="gallery-good">
+        <div class="gallery__item" onclick="openModal('images/flatlay-good-01.jpg', 'Контрастная мужская капсула.')">
+          <img class="gallery__image" src="images/flatlay-good-01.jpg" alt="Контрастная мужская капсула.">
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-good-02.jpg', 'Яркая женская сезонная раскладка.')">
+          <img class="gallery__image" src="images/flatlay-good-02.jpg" alt="Яркая женская сезонная раскладка.">
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-good-03.jpg', 'Мужская подборка с цветными акцентами.')">
+          <img class="gallery__image" src="images/flatlay-good-03.jpg" alt="Мужская подборка с цветными акцентами.">
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-good-04.jpg', 'Яркая сезонная мини-капсула.')">
+          <img class="gallery__image" src="images/flatlay-good-04.jpg" alt="Яркая сезонная мини-капсула.">
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-good-05.jpg', 'Спокойная база с акцентным принтом.')">
+          <img class="gallery__image" src="images/flatlay-good-05.jpg" alt="Спокойная база с акцентным принтом.">
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-good-06.jpg', 'Нежная современная цветовая палитра.')">
+          <img class="gallery__image" src="images/flatlay-good-06.jpg" alt="Нежная современная цветовая палитра.">
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-good-07.jpg', 'Образ с одним ярким акцентом.')">
+          <img class="gallery__image" src="images/flatlay-good-07.jpg" alt="Образ с одним ярким акцентом.">
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-good-08.jpg', 'Акцентный принт и поддерживающая база.')">
+          <img class="gallery__image" src="images/flatlay-good-08.jpg" alt="Акцентный принт и поддерживающая база.">
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-good-09.jpg', 'Мужская брендовая подборка.')">
+          <img class="gallery__image" src="images/flatlay-good-09.jpg" alt="Мужская брендовая подборка.">
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-good-10.jpg', 'Сезонная тематическая раскладка с аксессуарами.')">
+          <img class="gallery__image" src="images/flatlay-good-10.jpg" alt="Сезонная тематическая раскладка с аксессуарами.">
+        </div>
+      </div>
+
+      <h3>Неправильно: неудачные раскладки</h3>
+
+      <div class="gallery-banner gallery-banner--bad">
+        <div class="gallery-banner__title">❌ НЕПРАВИЛЬНО</div>
+        <div class="gallery-banner__subtitle">Примеры неудачных раскладок и типичных ошибок</div>
+      </div>
+
+      <div class="gallery" id="gallery-bad">
+        <div class="gallery__item" onclick="openModal('images/flatlay-bad-01.jpg', 'Образ вытянут по вертикали')">
+          <img class="gallery__image" src="images/flatlay-bad-01.jpg" alt="Образ вытянут по вертикали">
+          <div class="gallery__caption"><strong>Образ вытянут по вертикали</strong><br>Вещи плохо сочетаются между собой.</div>
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-bad-02.jpg', 'Неудачное расположение вещей')">
+          <img class="gallery__image" src="images/flatlay-bad-02.jpg" alt="Неудачное расположение вещей">
+          <div class="gallery__caption"><strong>Неудачное расположение вещей</strong><br>Нарушена аккуратность раскладки.</div>
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-bad-03.jpg', 'Просто набор вещей')">
+          <img class="gallery__image" src="images/flatlay-bad-03.jpg" alt="Просто набор вещей">
+          <div class="gallery__caption"><strong>Просто набор вещей</strong><br>Композиция отсутствует.</div>
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-bad-04.jpg', 'Неудачное расположение джинсов')">
+          <img class="gallery__image" src="images/flatlay-bad-04.jpg" alt="Неудачное расположение джинсов">
+          <div class="gallery__caption"><strong>Неудачное расположение джинсов</strong><br>Вещи разложены неаккуратно.</div>
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-bad-05.jpg', 'Нарушена композиция')">
+          <img class="gallery__image" src="images/flatlay-bad-05.jpg" alt="Нарушена композиция">
+          <div class="gallery__caption"><strong>Нарушена композиция</strong><br>Образ смещён и расположен не по центру.</div>
+        </div>
+        <div class="gallery__item" onclick="openModal('images/flatlay-bad-06.jpg', 'Просто набор вещей')">
+          <img class="gallery__image" src="images/flatlay-bad-06.jpg" alt="Просто набор вещей">
+          <div class="gallery__caption"><strong>Просто набор вещей</strong><br>Образ не выглядит завершённым.</div>
+        </div>
+      </div>
+
+      <h3 id="photo-checklist">Чек-лист фотографии</h3>
+
+      <ul class="checklist">
+        <li>Вещи актуальные и гармонично сочетаются.</li>
+        <li>Все вещи чистые и отпаренные.</li>
+        <li>Фото светлое, резкое и естественное.</li>
+        <li>Композиция расположена по центру.</li>
+        <li>В кадре нет пола и лишних объектов.</li>
+        <li>Ничего случайно не обрезано.</li>
+        <li>Есть место для цен и стикеров.</li>
+        <li>Фотография выглядит аккуратно и профессионально.</li>
+      </ul>
+
+      <div class="chapter-nav">
+        <a href="#chapter-5">← Предыдущий раздел</a>
+        <a href="#chapter-7">Следующий раздел →</a>
+      </div>
+    </section>
+
+    <section class="section searchable" id="chapter-7">
+      <span class="section__number">Раздел 7</span>
+      <h2>Анонс нового завоза</h2>
+
+      <div class="main-question">
+        Главный вопрос: как снять ролик, после которого человек захочет приехать на новый завоз?
+      </div>
+
+      <p>
+        <strong>Видео-анонс нового завоза</strong> — это динамичный вертикальный ролик, который показывает
+        атмосферу магазина, сообщает дату нового завоза и демонстрирует самые интересные трендовые и брендовые вещи.
+      </p>
+
+      <p>
+        Анонс — главный видеоформат для магазинов сети. Его снимает локальный SMM-специалист,
+        а при его отсутствии — директор или назначенный сотрудник.
+      </p>
+
+      <p>
+        Главная задача анонса — не просто показать одежду, а <strong>заинтересовать новым завозом и вызвать
+        желание прийти в магазин</strong>.
+      </p>
+
+      <p>После просмотра зритель должен сразу понимать:</p>
+
+      <div class="callout callout--info">
+        <strong>что происходит → когда → что интересного будет в завозе → куда нужно прийти.</strong>
+      </div>
+
+      <div class="grid grid--3">
+        <div class="card"><strong>Живой магазин</strong></div>
+        <div class="card"><strong>Новый завоз и дата</strong></div>
+        <div class="card"><strong>Трендовые образы</strong></div>
+        <div class="card"><strong>Премиум-подборка</strong></div>
+        <div class="card"><strong>Дата и адрес</strong></div>
+      </div>
+
+      <h3>Формат ролика</h3>
+
+      <div class="grid grid--3">
+        <div class="card"><h4>9:16</h4></div>
+        <div class="card"><h4>1080 × 1920 px</h4></div>
+        <div class="card"><h4>40–60 секунд</h4></div>
+      </div>
+
+      <p>Ролик снимается и монтируется в вертикальном формате.</p>
+
+      <p>Монтаж должен быть динамичным, без затянутых кадров.</p>
+
+      <p>
+        Важный текст всегда располагаем в безопасной зоне экрана — не вплотную к верхнему, нижнему
+        и боковым краям. При публикации часть экрана занимает интерфейс социальной сети, поэтому текст,
+        расположенный слишком близко к краям, может перекрываться.
+      </p>
+
+      <p>Перед публикацией обязательно проверить ролик именно на экране телефона.</p>
+
+      <h3>Сроки</h3>
+
+      <ul>
+        <li>съёмку можно начинать в субботу, воскресенье или понедельник;</li>
+        <li>в понедельник–вторник анонс должен быть готов;</li>
+        <li>контент необходимо согласовать до запуска продвижения;</li>
+        <li>продвижение запускается заранее, предпочтительно в понедельник–вторник.</li>
+      </ul>
+
+      <h3>Шаг 1. Захватываем внимание</h3>
+
+      <p>Первые секунды должны сразу погрузить зрителя в атмосферу <strong>реального работающего магазина</strong>.</p>
+
+      <p>Важно показать жизнь магазина, движение и постоянно меняющуюся картинку.</p>
+
+      <p>Для первых секунд можно использовать:</p>
+
+      <ul>
+        <li>общий красивый план магазина;</li>
+        <li>проход между рядами;</li>
+        <li>продавца, который поправляет или развешивает вещи;</li>
+        <li>покупателя, рассматривающего одежду;</li>
+        <li>общение продавца с покупателем;</li>
+        <li>работу кассы;</li>
+        <li>выдачу номерка в примерочную;</li>
+        <li>руки, перебирающие вещи на рейле;</li>
+        <li>интересные детали магазина;</li>
+        <li>крупные планы одежды.</li>
+      </ul>
+
+      <div class="callout callout--warning">
+        <strong>Важно: не выбираем один из этих кадров — комбинируем несколько.</strong>
+      </div>
+
+      <div class="callout callout--info">
+        <strong>Общий план магазина → продавец поправляет вещи → покупатель → крупный план одежды → примерочная → переход к новому завозу</strong>
+      </div>
+
+      <p>
+        Ориентир для первых секунд — примерно <strong>1–1,5 секунды на один кадр</strong> и от 3 до 7 секунд в общем.
+      </p>
+
+      <p>
+        Не используем один длинный статичный план. Постоянная смена изображения работает как визуальный хук:
+        зрителю интересно, что появится следующим.
+      </p>
+
+      <div class="items-gallery" id="announcement-hook-gallery"></div>
+      <script>
+        const announcementHookItems = ['Screenshot_2026-08-24-19-32-32-826_com.lemon.lvoverseas.jpg'];
+        renderItems('announcement-hook-gallery', 'Анонс/Хук', announcementHookItems, 'Хук');
+      </script>
+
+      <h3>Шаг 2. Сразу сообщаем главное</h3>
+
+      <p>В первые секунды зритель должен получить ответы на два главных вопроса:</p>
+
+      <div class="grid">
+        <div class="card"><strong>Что происходит? → Новое поступление</strong></div>
+        <div class="card"><strong>Когда? → Дата</strong></div>
+      </div>
+
+      <p>Поэтому дата и информация о новом поступлении являются главной текстовой информацией в начале ролика.</p>
+
+      <p>На экране появляется:</p>
+
+      <div class="grid">
+        <div class="card"><h4>ДАТА</h4></div>
+        <div class="card"><h4>НОВОЕ ПОСТУПЛЕНИЕ</h4></div>
+      </div>
+
+      <p>При необходимости можно добавить название магазина или локацию.</p>
+
+      <p>Дата и «Новое поступление» должны быть крупными, заметными и легко читаться с телефона.</p>
+
+      <p>Не перегружаем один кадр большим количеством текста.</p>
+
+      <div class="items-gallery" id="announcement-date-gallery"></div>
+      <script>
+        const announcementDateItems = ['Screenshot_2026-08-24-19-32-32-826_com.lemon.lvoverseas.jpg'];
+        renderItems('announcement-date-gallery', 'Анонс/Новое поступление и дата', announcementDateItems, 'Новое поступление и дата');
+      </script>
+
+      <h3>Шаг 3. Показываем трендовые вещи</h3>
+
+      <p>После динамичного начала и информации о новом завозе переходим к демонстрации самых интересных вещей.</p>
+
+      <p>Трендовые, сезонные и носибельные вещи выбираются для основной аудитории женщин 27-55 лет.</p>
+
+      <p>Перед съёмкой необходимо заранее собрать <strong>готовые актуальные образы</strong>.</p>
+
+      <p>Важно показывать не случайный набор вещей, а продуманные сочетания.</p>
+
+      <p>В образ можно включать:</p>
+
+      <ul>
+        <li>верх;</li>
+        <li>низ;</li>
+        <li>верхнюю одежду;</li>
+        <li>обувь;</li>
+        <li>сумку;</li>
+        <li>ремень;</li>
+        <li>аксессуары.</li>
+      </ul>
+
+      <p>Образ должен занимать основную часть кадра и хорошо просматриваться целиком.</p>
+
+      <p>Перед этим блоком в ролике появляется заголовок:</p>
+
+      <div class="callout callout--info"><strong>ПОДБОРКА ТРЕНДОВЫХ ВЕЩЕЙ</strong></div>
+
+      <div class="items-gallery" id="announcement-trend-title-gallery"></div>
+      <script>
+        const announcementTrendTitleItems = ['Screenshot_2026-08-24-19-32-47-368_com.lemon.lvoverseas.jpg'];
+        renderItems('announcement-trend-title-gallery', 'Анонс/Заставки', announcementTrendTitleItems, 'Подборка трендовых вещей');
+      </script>
+
+      <p>Кадры сменяются достаточно быстро: зритель должен успеть рассмотреть образ, но ролик не должен терять динамику.</p>
+
+      <div class="callout callout--info">
+        <strong>Если есть сомнения, какие вещи считать актуальными и как сочетать их между собой — см. <a href="#chapter-4">раздел «Выбор вещей для контента»</a>.</strong>
+      </div>
+
+      <div class="items-gallery" id="announcement-trend-gallery"></div>
+      <script>
+        const announcementTrendItems = ['Screenshot_2026-08-19-17-54-20-504_com.miui.gallery.jpg','Screenshot_2026-08-19-17-54-30-539_com.miui.gallery.jpg','Screenshot_2026-08-19-17-54-37-266_com.miui.gallery.jpg','Screenshot_2026-08-19-17-54-57-999_com.miui.gallery.jpg','Screenshot_2026-08-19-17-55-04-573_com.miui.gallery.jpg'];
+        renderItems('announcement-trend-gallery', 'Анонс/Трендовые вещи', announcementTrendItems, 'Трендовые вещи');
+      </script>
+
+      <h3>Шаг 4. Оживляем статичные образы</h3>
+
+      <p>Даже если сам образ расположен статично, кадр можно сделать живее за счёт простого действия внутри него.</p>
+
+      <div class="callout callout--info"><strong>рука добавляет обувь → появляется сумка → добавляется аксессуар</strong></div>
+
+      <p>Не обязательно использовать сложные эффекты или переходы. Простое естественное движение внутри кадра уже делает демонстрацию динамичнее.</p>
+
+      <h3>Шаг 5. Показываем брендовые вещи</h3>
+
+      <p>Перед блоком в ролике появляется заголовок:</p>
+
+      <div class="callout callout--info"><strong>ПРЕМИУМ ПОДБОРКА</strong></div>
+
+      <div class="items-gallery" id="announcement-premium-title-gallery"></div>
+      <script>
+        const announcementPremiumTitleItems = ['Screenshot_2026-08-24-19-33-01-128_com.lemon.lvoverseas.jpg'];
+        renderItems('announcement-premium-title-gallery', 'Анонс/Заставки', announcementPremiumTitleItems, 'Премиум подборка');
+      </script>
+
+      <p>Далее показываем заранее отобранные брендовые вещи.</p>
+
+      <p>Брендовые и премиальные находки показываются для бренд-хантеров и перекупов.</p>
+
+      <div class="callout callout--info"><strong>одна вещь → соответствующий бренд → следующая вещь → соответствующий бренд</strong></div>
+
+      <p>На кадре размещается название или логотип бренда.</p>
+
+      <p>Логотип должен:</p>
+
+      <ul>
+        <li>соответствовать показанной вещи;</li>
+        <li>хорошо читаться;</li>
+        <li>не перекрывать одежду;</li>
+        <li>не становиться главным объектом вместо товара.</li>
+      </ul>
+
+      <div class="callout callout--success"><strong>Вещь — главный объект.<br>Бренд — дополнительная информация.</strong></div>
+
+      <p>Премиум-блок можно монтировать немного быстрее трендовой подборки. Его задача — создать ощущение большого выбора интересных брендов в новом завозе.</p>
+
+      <div class="items-gallery" id="announcement-brands-gallery"></div>
+      <script>
+        const announcementBrandItems = ['Screenshot_2026-08-24-19-33-10-335_com.lemon.lvoverseas.jpg','Screenshot_2026-08-24-19-33-19-159_com.lemon.lvoverseas.jpg','Screenshot_2026-08-24-19-33-49-679_com.lemon.lvoverseas.jpg'];
+        renderItems('announcement-brands-gallery', 'Анонс/Брендовые вещи', announcementBrandItems, 'Брендовые вещи');
+      </script>
+
+      <h3>Шаг 6. Соблюдаем иерархию текста</h3>
+
+      <p>Весь текст в ролике имеет разную важность.</p>
+
+      <div class="grid grid--3">
+        <div class="card"><h4>1 уровень — главная информация</h4><p><strong>Дата</strong></p><p><strong>Новое поступление</strong></p><p>Это самый крупный и заметный текст.</p></div>
+        <div class="card"><h4>2 уровень — название блока</h4><p><strong>Подборка трендовых вещей</strong></p><p><strong>Премиум подборка</strong></p><p>Эти заголовки должны быть хорошо заметны, но не конкурировать с главной информацией.</p></div>
+        <div class="card"><h4>3 уровень — дополнительная информация</h4><p><strong>В продаже с…</strong></p><p>Название магазина, локация и другие уточнения.</p><p>Этот текст может быть меньше.</p></div>
+      </div>
+
+      <div class="callout callout--warning"><strong>Не размещаем важные надписи вплотную к краям экрана.</strong><br>Интерфейс социальной сети может перекрыть верхнюю и нижнюю часть ролика.</div>
+
+      <p>Все надписи должны успевать читаться во время просмотра.</p>
+
+      <h3>Шаг 7. Сохраняем динамику</h3>
+
+      <p>Динамичный монтаж — это не большое количество эффектов.</p>
+
+      <p>В основе хорошего анонса:</p>
+
+      <div class="callout callout--info"><strong>короткие кадры + смена планов + движение внутри кадра + попадание в ритм музыки</strong></div>
+
+      <p>По возможности сохраняем:</p>
+
+      <ul>
+        <li>одинаковое освещение;</li>
+        <li>единый стиль съёмки;</li>
+        <li>похожую дистанцию до вещей;</li>
+        <li>аккуратный фон;</li>
+        <li>одинаковое оформление текста и заголовков.</li>
+      </ul>
+
+      <p>Не перегружаем ролик сложными эффектами.</p>
+
+      <p>Не нужны:</p>
+
+      <ul>
+        <li>чрезмерные вспышки;</li>
+        <li>постоянные вращения;</li>
+        <li>сложные 3D-переходы;</li>
+        <li>эффекты, которые отвлекают от одежды.</li>
+      </ul>
+
+      <p>Главным объектом ролика остаётся <strong>новый завоз и вещи</strong>, а не монтажные эффекты.</p>
+
+      <h3>Шаг 8. Настраиваем звук</h3>
+
+      <p>Музыка должна соответствовать динамике ролика и помогать монтажу.</p>
+
+      <p>Смену кадров желательно делать в ритм музыки и музыкальные акценты.</p>
+
+      <p>Если используется озвучка или закадровый голос, действует простое правило:</p>
+
+      <div class="callout callout--info"><strong>ГОЛОС → главный<br>МУЗЫКА → фон</strong></div>
+
+      <p>Голос всегда должен быть громче музыки.</p>
+
+      <p>Зритель не должен вслушиваться в речь.</p>
+
+      <p>Во время озвучки музыку приглушаем. В промежутках без речи её можно сделать немного громче.</p>
+
+      <h3>Шаг 9. Заканчиваем призывом прийти в магазин</h3>
+
+      <p>Не заканчиваем анонс просто последней показанной вещью.</p>
+
+      <p>После просмотра человеку нельзя оставлять необходимость вспоминать, когда проходит новый завоз и где находится магазин.</p>
+
+      <p>Поэтому последние секунды ещё раз дают всю информацию, необходимую для посещения.</p>
+
+      <p>На финальном экране обязательно указываем:</p>
+
+      <div class="grid grid--3">
+        <div class="card"><strong>ДАТУ НОВОГО ЗАВОЗА</strong></div>
+        <div class="card"><strong>НАЗВАНИЕ МАГАЗИНА</strong></div>
+        <div class="card"><strong>АДРЕС</strong></div>
+      </div>
+
+      <p>Пример:</p>
+
+      <div class="callout callout--info"><strong>22 августа<br>Еврохенд<br>Лиханова, 62</strong></div>
+
+      <p>Фон можно немного затемнить или размыть, чтобы информация хорошо читалась.</p>
+
+      <div class="callout callout--success"><strong>Финальный экран отвечает на три вопроса:<br>Когда? → Где? → Куда прийти?</strong></div>
+
+      <div class="items-gallery" id="announcement-final-gallery"></div>
+      <script>
+        const announcementFinalItems = ['Screenshot_2026-08-24-19-34-02-943_com.lemon.lvoverseas.jpg'];
+        renderItems('announcement-final-gallery', 'Анонс/Финал', announcementFinalItems, 'Финал ролика');
+      </script>
+
+      <div class="callout callout--info">
+        <strong>Запомните</strong>
+        Не нужно копировать пример ролика кадр в кадр.<br><br>
+        Нужно сохранить его принцип:<br><strong>живой магазин → динамика → новый завоз → красивые трендовые вещи → сильные бренды → дата и адрес.</strong><br><br>
+        Ролик должен выглядеть современно, быстро смотреться и создавать у зрителя ощущение:<br>
+        <strong>«Хочу посмотреть, что будет в этом завозе».</strong>
+      </div>
+
+      <h3 id="announcement-checklist">Чек-лист хорошего анонса</h3>
+
+      <ul class="checklist">
+        <li>Ролик вертикальный — 9:16.</li>
+        <li>Первые секунды динамичные и состоят из нескольких коротких кадров.</li>
+        <li>В начале понятны дата и информация о новом поступлении.</li>
+        <li>Есть блок с трендовыми образами.</li>
+        <li>Есть блок с премиальными/брендовыми вещами.</li>
+        <li>У брендов стоят правильные названия или логотипы.</li>
+        <li>Вещи хорошо видны и не перекрыты текстом.</li>
+        <li>Нет затянутых кадров.</li>
+        <li>Текст легко читается с телефона.</li>
+        <li>Важный текст не расположен вплотную к краям.</li>
+        <li>Монтаж поддерживает ритм музыки.</li>
+        <li>Если есть голос, он громче музыки.</li>
+        <li>В финале повторяются дата, название магазина и адрес.</li>
+        <li>После просмотра сразу понятно: что за событие, когда оно проходит и куда нужно прийти.</li>
+        <li>Материал заранее согласован и готов к продвижению.</li>
+      </ul>
+
+      <div class="chapter-nav">
+        <a href="#chapter-6">← Предыдущий раздел</a>
+        <a href="#chapter-8">Следующий раздел →</a>
+      </div>
+    </section>
+
+    <section class="section searchable" id="chapter-8">
+      <span class="section__number">Раздел 8</span>
+      <h2>Публикация и продвижение</h2>
+
+      <div class="main-question">
+        Главный вопрос: как публиковать контент, чтобы его вовремя увидела нужная аудитория?
+      </div>
+
+      <h3>Где размещать контент</h3>
+
+      <p>
+        Все используемые сетью площадки должны вестись регулярно:
+      </p>
+
+      <div>
+        <span class="tag">ВКонтакте</span>
+        <span class="tag">Instagram</span>
+        <span class="tag">MAX</span>
+        <span class="tag">Рассылки ВКонтакте</span>
+      </div>
+
+      <div class="callout callout--danger">
+        <strong>Недопустимо</strong>
+        Пропадать из одной из площадок на неделю или размещать контент только ВКонтакте,
+        забывая про остальные каналы.
+      </div>
+
+      <h3>Заголовки</h3>
+
+      <p>
+        Для фотообзоров необходимо использовать подготовленную библиотеку заголовков.
+        Заголовки должны быть разнообразными, понятными и соответствовать содержанию публикации.
+      </p>
+
+      <p>
+        Формулировка вроде «10 июля новый завоз» сообщает факт, но почти не создаёт интереса.
+        Лучше использовать заголовок, который подчёркивает находки, ассортимент или ценность завоза.
+      </p>
+
+      <h3>Тексты для продвижения</h3>
+
+      <ul>
+        <li>не использовать чрезмерное количество эмодзи;</li>
+        <li>не писать текст полностью капслоком;</li>
+        <li>проверять грамматику и пунктуацию;</li>
+        <li>не публиковать непонятный текст, сгенерированный нейросетью без редактуры;</li>
+        <li>делать сообщение коротким, ясным и соответствующим объявлению.</li>
+      </ul>
+
+      <h3>Рассылки и акции</h3>
+
+      <p>
+        Сообщение об акции должно отправляться заранее — за 2–3 дня, а не за два часа
+        до её начала. Это даёт аудитории время запланировать поездку.
+      </p>
+
+      <h3>Продвижение</h3>
+
+      <p>
+        Материалы для продвижения необходимо передавать заранее:
+        оптимально в среду–четверг перед продажными выходными. Пятница — крайний,
+        но уже менее желательный срок.
+      </p>
+
+      <div class="callout callout--warning">
+        <strong>Образы для продвижения всегда согласуются</strong>
+        Нельзя сначала опубликовать слабый или неактуальный образ, а затем просить
+        поставить его на продвижение.
+      </div>
+
+      <h3>Быстрая проверка публикации</h3>
+
+      <ul class="checklist">
+        <li>Публикация показывает реальный товар.</li>
+        <li>Заголовок выбран из библиотеки или соответствует её принципам.</li>
+        <li>Текст понятный, грамотный и короткий.</li>
+        <li>Цены указаны на фотографии или в тексте.</li>
+        <li>Все необходимые площадки учтены.</li>
+        <li>Акция или продвижение запланированы заранее.</li>
+      </ul>
+
+      <div class="chapter-nav">
+        <a href="#chapter-7">← Предыдущий раздел</a>
+        <a href="#chapter-9">Следующий раздел →</a>
+      </div>
+    </section>
+
+    <section class="section searchable" id="chapter-9">
+      <span class="section__number">Раздел 9</span>
+      <h2>Контроль качества</h2>
+
+      <div class="main-question">
+        Главный вопрос: как директор может самостоятельно проверить качество контента?
+      </div>
+
+      <h3>Что контролировать ежедневно</h3>
+
+      <ul>
+        <li>вышел ли обязательный минимум товарных публикаций;</li>
+        <li>есть ли запас готового контента;</li>
+        <li>соблюдены ли стандарты фото и образов;</li>
+        <li>размещён ли материал на всех нужных площадках;</li>
+        <li>нет ли пропущенных дней;</li>
+        <li>своевременно ли отправлены акции, рассылки и материалы на продвижение.</li>
+      </ul>
+
+      <h3 id="final-checklist">Итоговый чек-лист директора</h3>
+
+      <details open>
+        <summary>Регулярность</summary>
+        <div>
+          <ul class="checklist">
+            <li>Контент выходит каждый день.</li>
+            <li>Перед завозом выходят три товарные публикации в день.</li>
+            <li>После завоза выходят минимум две товарные публикации в день.</li>
+            <li>Запас контента подготовлен заранее.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Ассортимент и образы</summary>
+        <div>
+          <ul class="checklist">
+            <li>Показаны самые сильные вещи.</li>
+            <li>Фасоны актуальны или базовы.</li>
+            <li>Образы гармоничны и сезонны.</li>
+            <li>Есть яркие, акцентные и брендовые позиции.</li>
+            <li>Нет грязных, рваных и очевидно устаревших вещей.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Фотографии</summary>
+        <div>
+          <ul class="checklist">
+            <li>Вещи отпарены и аккуратно разложены.</li>
+            <li>Фото светлое, чёткое и правильно кадрировано.</li>
+            <li>Нет пола, плитки и лишних объектов.</li>
+            <li>Цены подписаны.</li>
+            <li>Фотография выглядит профессионально.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Анонс и продвижение</summary>
+        <div>
+          <ul class="checklist">
+            <li>Анонс готов в понедельник–вторник.</li>
+            <li>Показаны актуальные образы и премиальные бренды.</li>
+            <li>Есть динамика, дата и призыв к действию.</li>
+            <li>Материал заранее согласован.</li>
+            <li>Продвижение и рассылка запланированы вовремя.</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3>Как понять, что работа выполнена хорошо</h3>
+
+      <p>
+        Оцениваются одновременно количество и качество. Формальное выполнение нормы
+        за счёт слабых публикаций не считается полноценным результатом. Контент должен:
+      </p>
+
+      <ul>
+        <li>регулярно показывать ассортимент;</li>
+        <li>вызывать интерес и желание приехать;</li>
+        <li>поддерживать живость группы;</li>
+        <li>соответствовать визуальным стандартам;</li>
+        <li>помогать росту подписчиков и продажам магазина.</li>
+      </ul>
+
+      <div class="chapter-nav">
+        <a href="#chapter-8">← Предыдущий раздел</a>
+        <a href="#chapter-10">Следующий раздел →</a>
+      </div>
+    </section>
+
+    <section class="section searchable" id="chapter-10">
+      <span class="section__number">Раздел 10</span>
+      <h2>Частые ошибки</h2>
+
+      <div class="main-question">
+        Главный вопрос: какие ошибки мешают группе расти и продавать завоз?
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ошибка</th>
+              <th>Почему это плохо</th>
+              <th>Как исправить</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Скучные серые образы</td>
+              <td>Не цепляют взгляд и не вызывают желания купить.</td>
+              <td>Добавлять цвет, акцент и сезонные сочетания.</td>
+            </tr>
+            <tr>
+              <td>Соцсети ведутся от случая к случаю</td>
+              <td>Группа теряет живость, охваты и доверие аудитории.</td>
+              <td>Подготавливать запас и публиковать каждый день.</td>
+            </tr>
+            <tr>
+              <td>Пропуски на 1–2 дня</td>
+              <td>Нарушают системность и снижают потенциал роста.</td>
+              <td>Планировать контент на цикл заранее.</td>
+            </tr>
+            <tr>
+              <td>Фото «лишь бы была видна вещь»</td>
+              <td>Даже хороший товар выглядит дешево и непривлекательно.</td>
+              <td>Работать с композицией, светом, отпариванием и кадрированием.</td>
+            </tr>
+            <tr>
+              <td>Неактуальные вещи</td>
+              <td>Не создают ценности поездки и плохо продаются без большой скидки.</td>
+              <td>Использовать актуальный или базовый крой и визуальные референсы.</td>
+            </tr>
+            <tr>
+              <td>Не используются готовые заголовки</td>
+              <td>Публикации выглядят однообразно и хуже привлекают внимание.</td>
+              <td>Пользоваться библиотекой заголовков.</td>
+            </tr>
+            <tr>
+              <td>Игнорируется одна из соцсетей</td>
+              <td>Часть аудитории перестаёт получать информацию.</td>
+              <td>Регулярно размещать материалы во всех используемых каналах.</td>
+            </tr>
+            <tr>
+              <td>Слабый текст для таргета</td>
+              <td>Эмодзи, капслок, ошибки и нейротекст снижают качество объявления.</td>
+              <td>Писать коротко, понятно и грамотно.</td>
+            </tr>
+            <tr>
+              <td>Образы не согласуются</td>
+              <td>В продвижение попадает слабый или неактуальный материал.</td>
+              <td>Согласовывать образы до съёмки и публикации.</td>
+            </tr>
+            <tr>
+              <td>Рассылки и продвижение запускаются поздно</td>
+              <td>Аудитория не успевает запланировать посещение магазина.</td>
+              <td>Готовить материалы за 2–3 дня и запускать продвижение заранее.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--success">
+        <strong>Финальное правило</strong>
+        Директор должен думать не «мне нужно выложить пост», а
+        «как через этот материал показать ценность вещей и вызвать желание приехать в магазин».
+      </div>
+
+      <div class="chapter-nav">
+        <a href="#chapter-9">← Предыдущий раздел</a>
+        <a href="#home">Вернуться на главную ↑</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Стандарты работы с контентом сети Еврохенд / Мюнхен · Первая редакция
+    </footer>
+  </div>
+</main>
+```
+
+  </div>
+
+<button class="top-button" id="topButton" aria-label="Наверх">↑</button>
+
+  <script>
+    const sidebar = document.getElementById("sidebar");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const topButton = document.getElementById("topButton");
+    const searchInput = document.getElementById("search");
+    const searchStatus = document.getElementById("searchStatus");
+    const sections = [...document.querySelectorAll(".searchable")];
+    const navLinks = [...document.querySelectorAll(".nav-link")];
+
+    mobileMenu.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+
+    navLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      topButton.style.display = window.scrollY > 700 ? "block" : "none";
+
+      let currentId = "";
+      document.querySelectorAll("section[id], header[id]").forEach(section => {
+        const top = section.getBoundingClientRect().top;
+        if (top <= 120) currentId = section.id;
+      });
+
+      navLinks.forEach(link => {
+        link.classList.toggle(
+          "active",
+          link.getAttribute("href") === "#" + currentId
+        );
+      });
+    });
+
+    topButton.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    function clearMarks() {
+      document.querySelectorAll("mark").forEach(mark => {
+        mark.replaceWith(document.createTextNode(mark.textContent));
+      });
+    }
+
+    searchInput.addEventListener("input", () => {
+      clearMarks();
+
+      const query = searchInput.value.trim().toLowerCase();
+
+      if (!query) {
+        sections.forEach(section => section.hidden = false);
+        searchStatus.style.display = "none";
+        return;
+      }
+
+      let found = 0;
+
+      sections.forEach(section => {
+        const text = section.textContent.toLowerCase();
+        const match = text.includes(query);
+        section.hidden = !match;
+
+        if (match) {
+          found++;
+
+          const walker = document.createTreeWalker(
+            section,
+            NodeFilter.SHOW_TEXT,
+            {
+              acceptNode(node) {
+                if (
+                  !node.parentElement ||
+                  ["SCRIPT", "STYLE", "MARK"].includes(node.parentElement.tagName)
+                ) {
+                  return NodeFilter.FILTER_REJECT;
+                }
+
+                return node.textContent.toLowerCase().includes(query)
+                  ? NodeFilter.FILTER_ACCEPT
+                  : NodeFilter.FILTER_REJECT;
+              }
+            }
+          );
+
+          const nodes = [];
+          while (walker.nextNode()) nodes.push(walker.currentNode);
+
+          nodes.forEach(node => {
+            const value = node.textContent;
+            const lower = value.toLowerCase();
+            const index = lower.indexOf(query);
+
+            if (index >= 0) {
+              const fragment = document.createDocumentFragment();
+              fragment.append(value.slice(0, index));
+
+              const mark = document.createElement("mark");
+              mark.textContent = value.slice(index, index + query.length);
+              fragment.append(mark);
+
+              fragment.append(value.slice(index + query.length));
+              node.replaceWith(fragment);
+            }
+          });
+        }
+      });
+
+      searchStatus.style.display = "block";
+      searchStatus.textContent = found
+        ? `Найдено разделов: ${found}`
+        : "Совпадений не найдено.";
+    });
+
+    document.addEventListener("click", event => {
+      if (
+        window.innerWidth <= 900 &&
+        sidebar.classList.contains("open") &&
+        !sidebar.contains(event.target) &&
+        event.target !== mobileMenu
+      ) {
+        sidebar.classList.remove("open");
+      }
+    });
+
+    // Gallery modal functionality
+    function openModal(imageSrc, caption) {
+      const modal = document.getElementById('galleryModal');
+      const modalImage = document.getElementById('modalImage');
+      const modalCaption = document.getElementById('modalCaption');
+      
+      modalImage.src = imageSrc;
+      modalCaption.textContent = caption;
+      modal.classList.add('open');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('galleryModal');
+      modal.classList.remove('open');
+    }
+
+    // Create modal if it doesn't exist
+    if (!document.getElementById('galleryModal')) {
+      const modal = document.createElement('div');
+      modal.id = 'galleryModal';
+      modal.className = 'modal';
+      modal.innerHTML = `
+        <div class="modal__content">
+          <button class="modal__close" onclick="closeModal()">&times;</button>
+          <img class="modal__image" id="modalImage" src="" alt="">
+          <div class="modal__caption" id="modalCaption"></div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      
+      // Close modal on background click
+      modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+      
+      // Close modal on Escape key
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+          closeModal();
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
