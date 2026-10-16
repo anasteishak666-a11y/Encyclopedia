@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Тестирование сотрудников — демонстрация</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand__eyebrow">Стандарты контента</span>
+        <strong class="brand__title">Проверка знаний</strong>
+        <span class="brand__subtitle">Учебный интерфейс для сотрудников</span>
+      </div>
+      <nav class="side-nav" aria-label="Навигация по демоверсии">
+        <button type="button" class="nav-button is-active" data-go="login">Вход</button>
+        <button type="button" class="nav-button" data-go="dashboard">Личный кабинет</button>
+        <button type="button" class="nav-button" data-go="quiz">Тестирование</button>
+        <button type="button" class="nav-button" data-go="admin">Администратор</button>
+      </nav>
+      <div class="sidebar-note">
+        <span class="status-dot"></span>
+        Демонстрационная версия<br>без настоящей авторизации
+      </div>
+      <a class="encyclopedia-link" href="../index.html">← Открыть энциклопедию</a>
+    </aside>
+
+    <main class="main-content">
+      <div class="topbar">
+        <span class="eyebrow">Система тестирования · макет</span>
+        <span class="topbar-pill">Демонстрационные данные</span>
+      </div>
+      <div class="demo-banner" role="note">
+        <strong>Демоверсия.</strong> Авторизация, отправка приглашений и проверка ответов не подключены. Все имена, результаты и даты ниже вымышлены.
+      </div>
+
+      <section class="screen" id="screen-login" aria-labelledby="login-title">
+        <div class="login-layout">
+          <div class="intro-panel">
+            <span class="hero-badge">Новый раздел энциклопедии</span>
+            <h1 id="login-title">Проверяйте знания уверенно</h1>
+            <p>Базовый тест, полная аттестация и история результатов — в одном спокойном рабочем пространстве.</p>
+            <div class="intro-stat"><strong>9 тем</strong><span>от выбора вещей до анонса нового завоза</span></div>
+          </div>
+          <div class="card login-card">
+            <span class="section-label">Вход сотрудника</span>
+            <h2>Добро пожаловать</h2>
+            <p class="muted">Для демонстрации введите любой email и пароль. Данные никуда не отправляются.</p>
+            <form id="login-form">
+              <label for="email">Электронная почта</label>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="имя@example.ru" required>
+              <label for="password">Пароль</label>
+              <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Введите пароль" required>
+              <button class="button button--primary button--full" type="submit">Войти в кабинет</button>
+            </form>
+            <div class="login-divider">или посмотреть другой экран</div>
+            <button class="button button--ghost button--full" type="button" data-go="admin">Кабинет администратора</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-dashboard" aria-labelledby="dashboard-title" hidden>
+        <div class="page-heading">
+          <div><span class="section-label">Личный кабинет</span><h1 id="dashboard-title">Здравствуйте, Мария</h1><p>Ваши тесты, результаты и ближайшие даты.</p></div>
+          <span class="avatar" aria-hidden="true">МС</span>
+        </div>
+        <div class="metrics">
+          <div class="metric card"><span>Текущий уровень</span><strong>Хорошее знание</strong><small>по последней аттестации</small></div>
+          <div class="metric card"><span>Последний результат</span><strong>86%</strong><small>полная аттестация · 12 октября</small></div>
+          <div class="metric card"><span>Лучший результат</span><strong>92%</strong><small>полная аттестация · 12 июля</small></div>
+        </div>
+        <div class="section-heading"><div><span class="section-label">Следующий шаг</span><h2>Доступные тесты</h2></div></div>
+        <div class="test-grid">
+          <article class="card test-card">
+            <span class="chip chip--success">Пройден</span>
+            <h3>Базовый тест</h3>
+            <p>20 вопросов · 25 минут · порог 80%</p>
+            <div class="test-card__footer"><span>Повторное прохождение закрыто</span><button class="text-button" type="button" data-result="basic">Посмотреть результат →</button></div>
+          </article>
+          <article class="card test-card test-card--featured">
+            <span class="chip chip--warning">Пересдача ожидается</span>
+            <h3>Полная аттестация</h3>
+            <p>50 вопросов · 75 минут · порог 90%</p>
+            <div class="test-card__footer"><span>Доступна с 19 октября 2026</span><button class="button button--primary" type="button" data-start="full">Посмотреть демотест</button></div>
+          </article>
+        </div>
+        <div class="info-strip"><strong>Переаттестация</strong><span>Следующая дата после успешного прохождения будет рассчитана через 3 календарных месяца.</span></div>
+        <div class="section-heading"><div><span class="section-label">Все попытки</span><h2>История результатов</h2></div></div>
+        <div class="card table-card">
+          <div class="table-scroll"><table><thead><tr><th>Дата</th><th>Тест</th><th>Результат</th><th>Уровень</th><th>Статус</th></tr></thead><tbody>
+            <tr><td>12.10.2026</td><td>Полная аттестация</td><td><strong>86%</strong></td><td>Хорошее знание</td><td><span class="chip chip--warning">Пересдача</span></td></tr>
+            <tr><td>12.07.2026</td><td>Полная аттестация</td><td><strong>92%</strong></td><td>Отличное знание</td><td><span class="chip chip--success">Пройдена</span></td></tr>
+            <tr><td>05.07.2026</td><td>Базовый тест</td><td><strong>85%</strong></td><td>Хорошее знание</td><td><span class="chip chip--success">Пройден</span></td></tr>
+          </tbody></table></div>
+        </div>
+        <div class="card result-card" id="result-panel" hidden>
+          <div class="result-card__heading"><div><span class="section-label">Пример итогового экрана</span><h2 id="result-title">Результат аттестации</h2><p id="result-description">Это вымышленный результат. Выборы в демотесте на него не влияют.</p></div><strong class="result-score" id="result-score">86%</strong></div>
+          <div id="result-detail"></div>
+          <button class="button button--ghost" type="button" id="close-result">Скрыть результат</button>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-quiz" aria-labelledby="quiz-title" hidden>
+        <div class="page-heading"><div><span class="section-label">Демонстрация прохождения</span><h1 id="quiz-title">Полная аттестация</h1><p>В демоверсии показаны два примера вместо 50 вопросов.</p></div><span class="chip chip--warning">Без оценки ответов</span></div>
+        <div class="quiz-layout">
+          <div class="card question-card">
+            <div class="question-top"><span id="question-number">Вопрос 1 из 2</span><span id="question-timer" class="timer" aria-live="off">75:00</span></div>
+            <div class="progress" aria-hidden="true"><span id="question-progress"></span></div>
+            <span id="question-type" class="section-label">Текстовый вопрос</span>
+            <h2 id="question-title"></h2>
+            <p id="question-hint" class="muted"></p>
+            <div id="question-photos" class="photo-options" hidden></div>
+            <div id="question-options" class="option-list" role="group" aria-label="Варианты ответа"></div>
+            <div class="question-actions"><span id="question-status" class="muted" role="status">Выберите вариант ответа.</span><button id="next-question" class="button button--primary" type="button" disabled>Продолжить →</button></div>
+          </div>
+          <aside class="card quiz-aside"><span class="section-label">Как устроен тест</span><h3>Один вопрос за раз</h3><p>В настоящей системе после подтверждения ответа вернуться к вопросу нельзя.</p><p>Здесь таймер и сохранение ответа показывают только внешний вид. Серверная проверка появится на следующем этапе.</p><button class="text-button" type="button" data-go="dashboard">Вернуться в кабинет</button></aside>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-admin" aria-labelledby="admin-title" hidden>
+        <div class="page-heading"><div><span class="section-label">Кабинет администратора</span><h1 id="admin-title">Сотрудники и результаты</h1><p>Демонстрационный обзор приглашений и аттестации команды.</p></div><button class="button button--primary" type="button" id="invite-toggle">+ Пригласить сотрудника</button></div>
+        <form class="card invite-form" id="invite-form" hidden>
+          <div><span class="section-label">Новое приглашение</span><h2>Данные сотрудника</h2></div>
+          <div class="form-grid"><label>Имя<input type="text" name="firstName" placeholder="Имя" required></label><label>Фамилия<input type="text" name="lastName" placeholder="Фамилия" required></label><label>Email<input type="email" name="inviteEmail" placeholder="имя@example.ru" required></label></div>
+          <div class="form-actions"><button class="button button--primary" type="submit">Показать приглашение</button><button class="button button--ghost" type="button" id="invite-cancel">Отмена</button></div>
+        </form>
+        <div class="metrics admin-metrics"><div class="metric card"><span>Сотрудников</span><strong>4</strong><small>в вымышленном списке</small></div><div class="metric card"><span>Аттестованы</span><strong>2</strong><small>результат от 90%</small></div><div class="metric card"><span>Ожидают действия</span><strong>2</strong><small>пересдача или приглашение</small></div></div>
+        <div class="section-heading"><div><span class="section-label">Команда</span><h2>Список сотрудников</h2></div></div>
+        <div class="card table-card">
+          <div class="table-scroll"><table><thead><tr><th>Сотрудник</th><th>Email</th><th>Последний результат</th><th>Статус</th><th>Действие</th></tr></thead><tbody id="employees-body"></tbody></table></div>
+        </div>
+        <div class="card employee-detail" id="employee-detail" hidden>
+          <div class="detail-heading"><div><span class="section-label">Карточка сотрудника</span><h2 id="detail-name"></h2><p id="detail-email" class="muted"></p></div><button class="icon-button" id="detail-close" type="button" aria-label="Закрыть карточку">×</button></div>
+          <div id="detail-results"></div>
+          <h3>История попыток</h3><div id="detail-history" class="detail-history"></div>
+          <div class="form-actions"><button class="button button--ghost" type="button" data-demo-action="Досрочная попытка отмечена только в демонстрации.">Разрешить пересдачу</button><button class="button button--ghost" type="button" data-demo-action="Доступ изменён только в демонстрации.">Отключить / восстановить доступ</button></div>
+        </div>
+      </section>
+      <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    </main>
+  </div>
+</body>
+</html>
