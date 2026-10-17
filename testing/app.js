@@ -1,6 +1,6 @@
 "use strict";
 
-// Только сценарий показа интерфейса. Реальных ответов, оценивания и авторизации здесь нет.
+// Вход настоящий; вопросы, результаты и административные данные остаются демонстрационными.
 const screens = ["login", "dashboard", "quiz", "admin"];
 const questions = [
   {
@@ -43,9 +43,105 @@ let selectedOption = -1;
 let demoDeadline = 0;
 let timerInterval = null;
 let toastTimeout = null;
+let authClient = null;
+let authenticatedUser = null;
+let authCheckSerial = 0;
+let currentScreen = "login";
+let loginInProgress = false;
+
+function setAuthMessage(message, isError = false) {
+  const element = document.getElementById("auth-message");
+  element.textContent = message;
+  element.classList.toggle("auth-message--error", isError);
+}
+
+function setLoginBusy(busy) {
+  const button = document.getElementById("login-button");
+  button.disabled = busy || !authClient;
+  button.textContent = busy ? "Проверяем вход…" : "Войти в кабинет";
+}
+
+function applyAuthenticatedUser(user) {
+  authenticatedUser = user;
+  document.querySelectorAll("[data-auth-only]").forEach(button => { button.hidden = !user; });
+  document.getElementById("logout-button").hidden = !user;
+  document.querySelector('.nav-button[data-go="login"]').hidden = Boolean(user);
+  if (user) {
+    document.getElementById("account-email").textContent =
+      `${user.email || "Сотрудник"} · тесты и результаты ниже демонстрационные.`;
+    if (currentScreen === "login") showScreen("dashboard");
+  } else {
+    document.getElementById("password").value = "";
+    document.getElementById("result-panel").hidden = true;
+    document.getElementById("employee-detail").hidden = true;
+    showScreen("login");
+  }
+}
+
+async function verifyCurrentSession() {
+  const check = ++authCheckSerial;
+  try {
+    // getSession восстанавливает сохранённый сеанс; getUser подтверждает его на сервере.
+    const { data: sessionData, error: sessionError } = await authClient.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!sessionData.session) {
+      if (check === authCheckSerial) {
+        applyAuthenticatedUser(null);
+        setAuthMessage("Введите email и пароль приглашённого сотрудника.");
+      }
+      return;
+    }
+    const { data: userData, error: userError } = await authClient.auth.getUser();
+    if (userError || !userData.user) throw userError || new Error("Нет подтверждённого пользователя");
+    if (check === authCheckSerial) {
+      applyAuthenticatedUser(userData.user);
+      setAuthMessage("");
+    }
+  } catch {
+    if (check === authCheckSerial) {
+      applyAuthenticatedUser(null);
+      setAuthMessage("Не удалось проверить доступ. Проверьте интернет и обновите страницу.", true);
+    }
+  }
+}
+
+async function initializeAuth() {
+  applyAuthenticatedUser(null);
+  try {
+    authClient = await window.createTestingSupabaseClient();
+    setLoginBusy(false);
+  } catch (error) {
+    setAuthMessage(error.message || "Авторизация пока недоступна.", true);
+    return;
+  }
+  await verifyCurrentSession();
+  authClient.auth.onAuthStateChange(event => {
+    if (event === "SIGNED_OUT") {
+      ++authCheckSerial;
+      applyAuthenticatedUser(null);
+      setAuthMessage("Вы вышли из аккаунта.");
+    } else if (
+      (event === "SIGNED_IN" && !loginInProgress) ||
+      event === "TOKEN_REFRESHED" ||
+      event === "USER_UPDATED"
+    ) {
+      // Запрос к Auth запускается после завершения обработчика события.
+      setTimeout(() => { void verifyCurrentSession(); }, 0);
+    }
+  });
+}
 
 function showScreen(name) {
   if (!screens.includes(name)) return;
+  if (name === "admin") {
+    showToast("Кабинет администратора откроется после серверной проверки роли. Пока он недоступен.");
+    return;
+  }
+  if (name !== "login" && !authenticatedUser) {
+    name = "login";
+    setAuthMessage("Сначала войдите в аккаунт.", true);
+  }
+  currentScreen = name;
   for (const screen of screens) {
     document.getElementById(`screen-${screen}`).hidden = screen !== name;
   }
@@ -84,6 +180,10 @@ function updateTimer() {
 }
 
 function startQuiz() {
+  if (!authenticatedUser) {
+    showScreen("login");
+    return;
+  }
   questionIndex = 0;
   selectedOption = -1;
   demoDeadline = Date.now() + 75 * 60 * 1000;
@@ -152,6 +252,10 @@ function renderQuestion() {
 }
 
 function showResult(kind) {
+  if (!authenticatedUser) {
+    showScreen("login");
+    return;
+  }
   stopTimer();
   showScreen("dashboard");
   const panel = document.getElementById("result-panel");
@@ -265,8 +369,53 @@ document.querySelectorAll("[data-go]").forEach(button => {
 });
 document.getElementById("login-form").addEventListener("submit", event => {
   event.preventDefault();
-  showScreen("dashboard");
-  showToast("Открыт демонстрационный кабинет. Авторизация не выполнялась.");
+  if (!authClient) {
+    setAuthMessage("Supabase ещё не настроен. Укажите публичные параметры в testing/config.js.", true);
+    return;
+  }
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  loginInProgress = true;
+  setLoginBusy(true);
+  setAuthMessage("Проверяем email и пароль…");
+  void (async () => {
+    try {
+      const { error } = await authClient.auth.signInWithPassword({ email, password });
+      if (error) {
+        setAuthMessage("Неверный email или пароль либо доступ к аккаунту не разрешён.", true);
+        return;
+      }
+      const { data, error: userError } = await authClient.auth.getUser();
+      if (userError || !data.user) {
+        setAuthMessage("Не удалось подтвердить вход. Попробуйте ещё раз.", true);
+        return;
+      }
+      ++authCheckSerial;
+      applyAuthenticatedUser(data.user);
+      setAuthMessage("");
+    } catch {
+      setAuthMessage("Не удалось связаться с Supabase. Проверьте интернет и попробуйте ещё раз.", true);
+    } finally {
+      loginInProgress = false;
+      setLoginBusy(false);
+    }
+  })();
+});
+document.getElementById("logout-button").addEventListener("click", async () => {
+  if (!authClient || !authenticatedUser) return;
+  const button = document.getElementById("logout-button");
+  button.disabled = true;
+  try {
+    const { error } = await authClient.auth.signOut({ scope: "local" });
+    if (error) throw error;
+    ++authCheckSerial;
+    applyAuthenticatedUser(null);
+    setAuthMessage("Вы вышли из аккаунта.");
+  } catch {
+    showToast("Не удалось завершить сеанс. Проверьте соединение и попробуйте снова.");
+  } finally {
+    button.disabled = false;
+  }
 });
 document.querySelectorAll("[data-start]").forEach(button => button.addEventListener("click", startQuiz));
 document.querySelectorAll("[data-result]").forEach(button => button.addEventListener("click", () => showResult(button.dataset.result)));
@@ -305,5 +454,4 @@ document.getElementById("detail-close").addEventListener("click", () => {
 document.querySelectorAll("[data-demo-action]").forEach(button => {
   button.addEventListener("click", () => showToast(button.dataset.demoAction));
 });
-renderEmployees();
-showScreen("login");
+void initializeAuth();
