@@ -45,6 +45,8 @@ let timerInterval = null;
 let toastTimeout = null;
 let authClient = null;
 let authenticatedUser = null;
+let currentProfile = null;
+let currentRole = null;
 let authCheckSerial = 0;
 let currentScreen = "login";
 let loginInProgress = false;
@@ -61,9 +63,29 @@ function setLoginBusy(busy) {
   button.textContent = busy ? "Проверяем вход…" : "Войти в кабинет";
 }
 
-function applyAuthenticatedUser(user) {
+async function loadUserAccess(user) {
+  const { data: profile, error: profileError } = await authClient.from("profiles")
+    .select("user_id, email, first_name, last_name, access_status")
+    .eq("user_id", user.id).maybeSingle();
+  if (profileError) throw new Error("Не удалось проверить статус доступа. Попробуйте позже.");
+  if (!profile || profile.user_id !== user.id || profile.access_status !== "active") {
+    throw new Error("Доступ к кабинету не разрешён. Обратитесь к администратору.");
+  }
+
+  const { data: role, error: roleError } = await authClient.from("user_roles")
+    .select("user_id, role").eq("user_id", user.id).maybeSingle();
+  if (roleError || !role || role.user_id !== user.id || !["admin", "employee"].includes(role.role)) {
+    throw new Error("Не удалось проверить роль пользователя. Попробуйте позже.");
+  }
+  return { profile, role: role.role };
+}
+
+function applyAuthenticatedUser(user, access = null) {
   authenticatedUser = user;
+  currentProfile = access?.profile || null;
+  currentRole = access?.role || null;
   document.querySelectorAll("[data-auth-only]").forEach(button => { button.hidden = !user; });
+  document.querySelector('.nav-button[data-go="admin"]').hidden = currentRole !== "admin";
   document.getElementById("logout-button").hidden = !user;
   document.querySelector('.nav-button[data-go="login"]').hidden = Boolean(user);
   if (user) {
@@ -94,13 +116,15 @@ async function verifyCurrentSession() {
     const { data: userData, error: userError } = await authClient.auth.getUser();
     if (userError || !userData.user) throw userError || new Error("Нет подтверждённого пользователя");
     if (check === authCheckSerial) {
-      applyAuthenticatedUser(userData.user);
+      const access = await loadUserAccess(userData.user);
+      if (check !== authCheckSerial) return;
+      applyAuthenticatedUser(userData.user, access);
       setAuthMessage("");
     }
-  } catch {
+  } catch (error) {
     if (check === authCheckSerial) {
       applyAuthenticatedUser(null);
-      setAuthMessage("Не удалось проверить доступ. Проверьте интернет и обновите страницу.", true);
+      setAuthMessage(error.message || "Не удалось проверить доступ. Проверьте интернет и обновите страницу.", true);
     }
   }
 }
@@ -133,8 +157,8 @@ async function initializeAuth() {
 
 function showScreen(name) {
   if (!screens.includes(name)) return;
-  if (name === "admin") {
-    showToast("Кабинет администратора откроется после серверной проверки роли. Пока он недоступен.");
+  if (name === "admin" && currentRole !== "admin") {
+    showToast("Раздел доступен только администратору.");
     return;
   }
   if (name !== "login" && !authenticatedUser) {
@@ -390,16 +414,54 @@ document.getElementById("login-form").addEventListener("submit", event => {
         setAuthMessage("Не удалось подтвердить вход. Попробуйте ещё раз.", true);
         return;
       }
+      const access = await loadUserAccess(data.user);
       ++authCheckSerial;
-      applyAuthenticatedUser(data.user);
+      applyAuthenticatedUser(data.user, access);
       setAuthMessage("");
-    } catch {
-      setAuthMessage("Не удалось связаться с Supabase. Проверьте интернет и попробуйте ещё раз.", true);
+    } catch (error) {
+      applyAuthenticatedUser(null);
+      setAuthMessage(error.message || "Не удалось связаться с Supabase. Проверьте интернет и попробуйте ещё раз.", true);
     } finally {
       loginInProgress = false;
       setLoginBusy(false);
     }
   })();
+});
+document.getElementById("forgot-password").addEventListener("click", event => {
+  event.preventDefault();
+  document.getElementById("reset-email").value = document.getElementById("email").value.trim();
+  document.getElementById("login-form").hidden = true;
+  document.getElementById("forgot-password").hidden = true;
+  document.getElementById("reset-request-form").hidden = false;
+  setAuthMessage("Укажите email учётной записи. Если она существует, мы отправим письмо восстановления.");
+  document.getElementById("reset-email").focus();
+});
+document.getElementById("back-to-login").addEventListener("click", () => {
+  document.getElementById("reset-request-form").hidden = true;
+  document.getElementById("login-form").hidden = false;
+  document.getElementById("forgot-password").hidden = false;
+  setAuthMessage("Введите email и пароль.");
+});
+document.getElementById("reset-request-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  if (!authClient) {
+    setAuthMessage("Сервис авторизации пока недоступен. Попробуйте позже.", true);
+    return;
+  }
+  const button = document.getElementById("send-reset");
+  button.disabled = true;
+  setAuthMessage("Отправляем запрос…");
+  try {
+    const email = document.getElementById("reset-email").value.trim();
+    const redirectTo = new URL("reset-password.html", window.location.href).href;
+    const { error } = await authClient.auth.resetPasswordForEmail(email, { redirectTo });
+    if (error) throw error;
+    setAuthMessage("Если учётная запись существует, письмо с инструкцией отправлено. Проверьте почту.");
+  } catch {
+    setAuthMessage("Не удалось отправить запрос. Проверьте подключение и попробуйте позже.", true);
+  } finally {
+    button.disabled = false;
+  }
 });
 document.getElementById("logout-button").addEventListener("click", async () => {
   if (!authClient || !authenticatedUser) return;

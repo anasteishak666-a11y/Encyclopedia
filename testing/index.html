@@ -60,6 +60,13 @@
               <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Введите пароль" required>
               <button class="button button--primary button--full" id="login-button" type="submit" disabled>Войти в кабинет</button>
             </form>
+            <a class="text-button" id="forgot-password" href="#reset-password">Забыли пароль?</a>
+            <form id="reset-request-form" hidden>
+              <label for="reset-email">Электронная почта</label>
+              <input id="reset-email" name="reset-email" type="email" autocomplete="email" required>
+              <button class="button button--primary button--full" id="send-reset" type="submit">Отправить письмо восстановления</button>
+              <button class="text-button" id="back-to-login" type="button">Вернуться ко входу</button>
+            </form>
           </div>
         </div>
       </section>
