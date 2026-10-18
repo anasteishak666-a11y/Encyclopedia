@@ -34,7 +34,7 @@ window.createTestingSupabaseClient = async function createTestingSupabaseClient(
   if (!window.supabase?.createClient) {
     await new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+      script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0";
       script.onload = resolve;
       script.onerror = () => reject(new Error("Не удалось загрузить библиотеку Supabase. Проверьте подключение к интернету."));
       document.head.append(script);
